@@ -1,0 +1,131 @@
+version: "3.9"
+services:
+  help:
+    # SeQ is a framework for logging of exceptions etc
+    container_name: webshophelp
+    image: brhv/webshophelp
+    restart: unless-stopped
+    ports:
+      - 8000:8080     
+    networks:
+      - backtier
+    environment:
+      - SERVER=webshopdatabase
+  seq:
+    # SeQ is a framework for logging of exceptions etc
+    container_name: SeQ
+    image: datalust/seq:latest
+    restart: unless-stopped
+    ports:
+      - 8081:80
+      - 5341:5341
+    networks:
+      - backtier
+    environment:
+      - ACCEPT_EULA=Y
+  smtp4dev:
+    # development time email server and client, easy to test sending emails
+    container_name: smtp4dev
+    image: rnwood/smtp4dev:latest
+    ports:
+      - 8082:80
+      - 26:25
+    networks:
+      - backtier
+  paymentapi:
+   # the payment API
+    container_name: webshop.payment
+    image: brhv/webshoppaymentapi
+    restart: unless-stopped
+    ports:
+      - 8083:8080
+    networks:
+      - backtier  
+  catalogapi:
+  # the catalog API
+    container_name: webshop.catalog
+    image: brhv/webshopcatalogapi
+    restart: unless-stopped
+    ports:
+        - 8084:8080
+    networks:
+        - backtier
+  customerapi:
+  # the customer API
+    container_name: webshop.customer
+    image: brhv/webshopcustomerapi
+    restart: unless-stopped
+    ports:
+        - 8085:8080
+    networks:
+        - backtier
+  reviewapi-1:
+   # the review API
+    container_name: webshop.review
+    image: brhv/webshopreviewservice
+    restart: unless-stopped
+    ports:
+      - 8086:8080
+    networks:
+      - backtier
+    environment:
+      - connectionstring=Server=webshopdatabase;Database=PSUReviews;User Id=sa;Password=PSU@password
+  reviewapi-2:
+   # the review API - 2 for load balancing
+    container_name: webshop.review
+    image: brhv/webshopreviewservice
+    restart: unless-stopped
+    ports:
+      - 8087:8080
+    networks:
+      - backtier
+    environment:
+      - connectionstring=Server=webshopdatabase;Database=PSUReviews;User Id=sa;Password=PSU@password
+  reviewgateway:
+   # the review APIgateway
+    container_name: webshop.reviewgateway
+    image: brhv/webshopgateway
+    restart: unless-stopped
+    ports:
+      - 8089:8080
+    networks:
+      - backtier
+  sqlexpress:
+  #the sql server
+    container_name: webshopdatabase
+    image: mcr.microsoft.com/mssql/server:latest
+    restart: unless-stopped
+    ports:
+        - 1403:1433 # SQL Server port, connect SSMS with this: localhost, 1403
+    environment:
+        - ACCEPT_EULA=Y
+        - SA_PASSWORD=PSU@password
+        - MSSQL_PID=Express
+    volumes:
+        - ./data:/var/opt/mssql/data
+    networks:
+        - backtier
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "8088:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+    depends_on:
+      - reviewapi
+      - customerapi
+      - catalogapi
+      - paymentapi
+    networks:
+      - backtier
+networks:
+  # The presence of these objects is sufficient to define them
+  backtier: {}
+
+
+
+
+

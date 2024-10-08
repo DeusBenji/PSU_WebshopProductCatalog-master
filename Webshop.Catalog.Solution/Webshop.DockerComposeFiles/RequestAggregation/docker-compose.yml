@@ -1,0 +1,23 @@
+﻿version: '3.8'
+
+services:
+  reviewservice:
+    image: brhv/webshopreviewservice:latest
+    container_name: ra_reviewservice
+    ports:
+      - "9090:8080"
+    environment:
+      INSTANCE_ID: ReviewService
+    networks:
+      - micronetwork 
+    
+  productservice:
+    image: brhv/webshopcatalogapi:latest
+    container_name: ra_productservice
+    ports:
+      - "9091:8080"
+    networks:
+      - micronetwork 
+
+networks:
+  micronetwork : {}

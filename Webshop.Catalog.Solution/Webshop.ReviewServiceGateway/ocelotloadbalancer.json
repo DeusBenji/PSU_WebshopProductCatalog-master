@@ -1,0 +1,27 @@
+{
+  "Routes": [    
+    {
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 8086
+        },
+        {
+          "Host": "localhost",
+          "Port": 8087
+        }
+      ],
+      "UpstreamPathTemplate": "/reviewservice/{everything}",
+      "UpstreamHttpMethod": [ "GET", "POST", "PUT", "DELETE" ],
+      "LoadBalancerOptions": {
+        "Type": "RoundRobin"
+      }
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:9100"
+  }
+}
+

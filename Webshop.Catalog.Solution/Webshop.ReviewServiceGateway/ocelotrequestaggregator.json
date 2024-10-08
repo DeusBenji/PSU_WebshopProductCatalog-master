@@ -1,0 +1,39 @@
+{
+  "Routes": [
+    {
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/productsservice/{everything}",
+      "DownstreamPathTemplate": "/api/demoproduct/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 9091
+        }
+      ],
+      "Key": "Product"
+    },
+    {
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/reviewservice/{everything}",
+      "DownstreamPathTemplate": "/api/demoreview/products/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 9090
+        }
+      ],
+      "Key": "Reviews"
+    }
+  ],
+  "Aggregates": [
+    {
+      "UpstreamPathTemplate": "/productreview/{everything}",
+      "RouteKeys": [ "Product", "Reviews" ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:7052"
+  }
+}
