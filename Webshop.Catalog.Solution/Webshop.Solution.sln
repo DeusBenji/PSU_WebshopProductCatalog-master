@@ -70,7 +70,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webshop.Review.Application.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webshop.Review.API.Tests", "Webshop.Review.API.Tests\Webshop.Review.API.Tests.csproj", "{8AF718F2-1E03-43FB-8ED7-A7FDB4E6A699}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Webshop.DockerComposeFiles", "Webshop.DockerComposeFiles\Webshop.DockerComposeFiles.csproj", "{E4249626-7798-4F04-9434-55627D172A1C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Webshop.DockerComposeFiles", "Webshop.DockerComposeFiles\Webshop.DockerComposeFiles.csproj", "{E4249626-7798-4F04-9434-55627D172A1C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebShop.Search.Api", "WebShop.Search.Api\WebShop.Search.Api.csproj", "{B86A38AC-4768-40E8-8378-1ADD5780BBB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Webshop.Search.Application", "Webshop.Search.Application\Webshop.Search.Application.csproj", "{37E05E72-0B97-4147-8E86-F846593EC3FA}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -170,6 +174,14 @@ Global
 		{E4249626-7798-4F04-9434-55627D172A1C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E4249626-7798-4F04-9434-55627D172A1C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E4249626-7798-4F04-9434-55627D172A1C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B86A38AC-4768-40E8-8378-1ADD5780BBB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B86A38AC-4768-40E8-8378-1ADD5780BBB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B86A38AC-4768-40E8-8378-1ADD5780BBB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B86A38AC-4768-40E8-8378-1ADD5780BBB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37E05E72-0B97-4147-8E86-F846593EC3FA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37E05E72-0B97-4147-8E86-F846593EC3FA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37E05E72-0B97-4147-8E86-F846593EC3FA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37E05E72-0B97-4147-8E86-F846593EC3FA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -202,6 +214,8 @@ Global
 		{253BCBC9-88DD-426E-846E-2F98C1927075} = {BF604B02-EA9B-4EE8-A7F0-EDD07B387082}
 		{8AF718F2-1E03-43FB-8ED7-A7FDB4E6A699} = {BF604B02-EA9B-4EE8-A7F0-EDD07B387082}
 		{E4249626-7798-4F04-9434-55627D172A1C} = {75AFF816-1819-450B-8D19-E4CBD80530B0}
+		{B86A38AC-4768-40E8-8378-1ADD5780BBB4} = {98BEA6C6-7D0C-4A74-86D3-804C1C4A952A}
+		{37E05E72-0B97-4147-8E86-F846593EC3FA} = {774CCD7D-ED3B-4D75-8A7F-CEFC745765DB}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {822AAF83-FC8D-42BE-9726-63314F24EB10}
