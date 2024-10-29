@@ -74,10 +74,10 @@ jobs:
 
     - name: Build Docker image
       working-directory: Webshop.Catalog.Solution
-      run: docker build -f Webshop.Review.API/Dockerfile --force-rm -t brhv/webshopreviewservice:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+      run: docker build -f Webshop.Review.API/Dockerfile --force-rm -t benj3249/webshopreviewservice:latest --build-arg "BUILD_CONFIGURATION=Debug" .
 
     - name: Push Docker image
-      run: docker push brhv/webshopreviewservice:latest
+      run: docker push benj3249/webshopreviewservice:latest
 
   build_deploy_payment_service:
     needs: build_test_solution
@@ -119,10 +119,10 @@ jobs:
 
     - name: Build Docker image
       working-directory: Webshop.Catalog.Solution
-      run: docker build -f Webshop.Payment.Api/Dockerfile --force-rm -t brhv/webshoppaymentapi:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+      run: docker build -f Webshop.Payment.Api/Dockerfile --force-rm -t benj3249/webshoppaymentapi:latest --build-arg "BUILD_CONFIGURATION=Debug" .
 
     - name: Push Docker image
-      run: docker push brhv/webshoppaymentapi:latest
+      run: docker push benj3249/webshoppaymentapi:latest
 
   build_deploy_customer_service:
     needs: build_test_solution
@@ -158,10 +158,10 @@ jobs:
 
     - name: Build Docker image
       working-directory: Webshop.Catalog.Solution
-      run: docker build -f Webshop.Customer.Api/Dockerfile --force-rm -t brhv/webshopcustomerapi:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+      run: docker build -f Webshop.Customer.Api/Dockerfile --force-rm -t benj3249/webshopcustomerapi:latest --build-arg "BUILD_CONFIGURATION=Debug" .
 
     - name: Push Docker image
-      run: docker push brhv/webshopcustomerapi:latest
+      run: docker push benj3249/webshopcustomerapi:latest
 
   build_deploy_catalog_service:
     needs: build_test_solution
@@ -197,10 +197,10 @@ jobs:
 
     - name: Build Docker image
       working-directory: Webshop.Catalog.Solution
-      run: docker build -f Webshop.Catalog.Api/Dockerfile --force-rm -t brhv/webshopcatalogapi:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+      run: docker build -f Webshop.Catalog.Api/Dockerfile --force-rm -t benj3249/webshopcatalogapi:latest --build-arg "BUILD_CONFIGURATION=Debug" .
 
     - name: Push Docker image
-      run: docker push brhv/webshopcatalogapi:latest
+      run: docker push benj3249/webshopcatalogapi:latest
 
   build_deploy_help:
     needs: build_test_solution
@@ -236,10 +236,10 @@ jobs:
 
     - name: Build Docker image
       working-directory: Webshop.Catalog.Solution
-      run: docker build -f Webshop.Help/Dockerfile --force-rm -t brhv/webshophelp:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+      run: docker build -f Webshop.Help/Dockerfile --force-rm -t benj3249/webshophelp:latest --build-arg "BUILD_CONFIGURATION=Debug" .
 
     - name: Push Docker image
-      run: docker push brhv/webshophelp:latest
+      run: docker push benj3249/webshophelp:latest
 
   build_deploy_gateway:
     needs: build_test_solution
@@ -275,8 +275,8 @@ jobs:
 
     - name: Build Docker image
       working-directory: Webshop.Catalog.Solution
-      run: docker build -f Webshop.ReviewServiceGateway/Dockerfile --force-rm -t brhv/webshopgateway:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+      run: docker build -f Webshop.ReviewServiceGateway/Dockerfile --force-rm -t benj3249/webshopgateway:latest --build-arg "BUILD_CONFIGURATION=Debug" .
 
     - name: Push Docker image
-      run: docker push brhv/webshopgateway:latest
+      run: docker push benj3249/webshopgateway:latest
 
