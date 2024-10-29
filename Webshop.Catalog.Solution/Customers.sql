@@ -14,5 +14,3 @@ CREATE TABLE [dbo].[Customer](
 	[Id] ASC
 )
 ) 
-
-
