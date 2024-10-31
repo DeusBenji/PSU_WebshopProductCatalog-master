@@ -26,13 +26,12 @@ jobs:
     needs: setup
     strategy:
       matrix:
-        service:
-          - Webshop.Catalog.Solution/Webshop.Review.API/Webshop.Review.API.csproj
-          - Webshop.Catalog.Solution/Webshop.Payment.Api/Webshop.Payment.Api.csproj
-          - Webshop.Catalog.Solution/Webshop.Customer.Api/Webshop.Customer.Api.csproj
-          - Webshop.Catalog.Solution/Webshop.Catalog.Api/Webshop.Catalog.Api.csproj
-          - Webshop.Catalog.Solution/Webshop.Help/Webshop.Help.csproj
-          - Webshop.Catalog.Solution/Webshop.ReviewServiceGateway/Webshop.ReviewServiceGateway.csproj
+        service_path:
+          - Src/API/Webshop.Review.API/Webshop.Review.API.csproj
+          - Src/API/Webshop.Payment.Api/Webshop.Payment.Api.csproj
+          - Src/API/Webshop.Customer.Api/Webshop.Customer.Api.csproj
+          - Src/API/Webshop.Catalog.Api/Webshop.Catalog.Api.csproj
+          - Src/Webshop.Help/Webshop.Help.csproj
     steps:
     - uses: actions/checkout@v3
 
@@ -45,32 +44,39 @@ jobs:
           ${{ runner.os }}-nuget-
 
     - name: Restore dependencies
-      run: dotnet restore ${{ matrix.service }}
+      run: dotnet restore ${{ matrix.service_path }}
 
     - name: Build
-      run: dotnet build ${{ matrix.service }} --no-restore
+      run: dotnet build ${{ matrix.service_path }} --no-restore
 
     - name: Test
-      run: dotnet test ${{ matrix.service }} --no-build --verbosity normal
+      run: dotnet test ${{ matrix.service_path }} --no-build --verbosity normal
 
   publish_docker:
     needs: build_test
     strategy:
       matrix:
-        service:
-          - { path: Webshop.Catalog.Solution/Webshop.Review.API, image: benj3249/webshopreviewservice }
-          - { path: Webshop.Catalog.Solution/Webshop.Payment.Api, image: benj3249/webshoppaymentapi }
-          - { path: Webshop.Catalog.Solution/Webshop.Customer.Api, image: benj3249/webshopcustomerapi }
-          - { path: Webshop.Catalog.Solution/Webshop.Catalog.Api, image: benj3249/webshopcatalogapi }
-          - { path: Webshop.Catalog.Solution/Webshop.Help, image: benj3249/webshophelp }
-          - { path: Webshop.Catalog.Solution/Webshop.ReviewServiceGateway, image: benj3249/webshopgateway }
+        service_path:
+          - Src/API/Webshop.Review.API
+          - Src/API/Webshop.Payment.Api
+          - Src/API/Webshop.Customer.Api
+          - Src/API/Webshop.Catalog.Api
+          - Src/Webshop.Help
+        image_name:
+          - benj3249/webshopreviewservice
+          - benj3249/webshoppaymentapi
+          - benj3249/webshopcustomerapi
+          - benj3249/webshopcatalogapi
+          - benj3249/webshophelp
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
 
     - name: Build Docker image
+      env:
+        DOCKER_BUILDKIT: 1
       run: |
-        docker build -f ${{ matrix.service.path }}/Dockerfile --force-rm -t ${{ matrix.service.image }}:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+        docker build -f ${{ matrix.service_path }}/Dockerfile --force-rm -t ${{ matrix.image_name }}:latest --build-arg "BUILD_CONFIGURATION=Debug" Src
 
     - name: Push Docker image
-      run: docker push ${{ matrix.service.image }}:latest
+      run: docker push ${{ matrix.image_name }}:latest
