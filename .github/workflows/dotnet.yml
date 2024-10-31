@@ -98,3 +98,4 @@ jobs:
 
     - name: Push Docker image
       run: docker push ${{ matrix.config.image_name }}:latest
+
