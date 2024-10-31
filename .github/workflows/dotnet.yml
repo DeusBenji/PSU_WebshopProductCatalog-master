@@ -1,4 +1,4 @@
-# .github/workflows/webshop_build.yml
+# .github/workflows/dotnet.yml
 name: Webshop Build
 
 on:
