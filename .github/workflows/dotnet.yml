@@ -30,14 +30,7 @@ jobs:
     - name: Test
       run: dotnet test Webshop.Catalog.Solution/Webshop.Solution.sln --no-build --verbosity normal
 
-    # Add Docker login here to ensure authentication in this workflow
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        username: ${{ secrets.DOCKER_HUB_USERNAME }}
-        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-  # Call the reusable workflow for each microservice
+  # Call the reusable workflow for each microservice, explicitly passing secrets
 
   build_deploy_review_service:
     needs: build_test_solution
@@ -45,6 +38,9 @@ jobs:
     with:
       service-path: Webshop.Catalog.Solution/Webshop.Review.API/Webshop.Review.API.csproj
       docker-tag: benj3249/webshopreviewservice:latest
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
   build_deploy_payment_service:
     needs: build_test_solution
@@ -52,6 +48,9 @@ jobs:
     with:
       service-path: Webshop.Catalog.Solution/Webshop.Payment.Api/Webshop.Payment.Api.csproj
       docker-tag: benj3249/webshoppaymentapi:latest
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
   build_deploy_customer_service:
     needs: build_test_solution
@@ -59,6 +58,9 @@ jobs:
     with:
       service-path: Webshop.Catalog.Solution/Webshop.Customer.Api/Webshop.Customer.Api.csproj
       docker-tag: benj3249/webshopcustomerapi:latest
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
   build_deploy_catalog_service:
     needs: build_test_solution
@@ -66,6 +68,9 @@ jobs:
     with:
       service-path: Webshop.Catalog.Solution/Webshop.Catalog.Api/Webshop.Catalog.Api.csproj
       docker-tag: benj3249/webshopcatalogapi:latest
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
   build_deploy_help:
     needs: build_test_solution
@@ -73,6 +78,9 @@ jobs:
     with:
       service-path: Webshop.Catalog.Solution/Webshop.Help/Webshop.Help.csproj
       docker-tag: benj3249/webshophelp:latest
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
   build_deploy_gateway:
     needs: build_test_solution
@@ -80,3 +88,6 @@ jobs:
     with:
       service-path: Webshop.Catalog.Solution/Webshop.ReviewServiceGateway/Webshop.ReviewServiceGateway.csproj
       docker-tag: benj3249/webshopgateway:latest
+    secrets:
+      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
+      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
