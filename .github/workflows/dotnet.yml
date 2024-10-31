@@ -27,11 +27,12 @@ jobs:
     strategy:
       matrix:
         service_path:
-          - Src/API/Webshop.Review.API/Webshop.Review.API.csproj
-          - Src/API/Webshop.Payment.Api/Webshop.Payment.Api.csproj
-          - Src/API/Webshop.Customer.Api/Webshop.Customer.Api.csproj
-          - Src/API/Webshop.Catalog.Api/Webshop.Catalog.Api.csproj
-          - Src/Webshop.Help/Webshop.Help.csproj
+          - Webshop.Catalog.Solution/Webshop.Review.API/Webshop.Review.API.csproj
+          - Webshop.Catalog.Solution/Webshop.Payment.Api/Webshop.Payment.Api.csproj
+          - Webshop.Catalog.Solution/Webshop.Customer.Api/Webshop.Customer.Api.csproj
+          - Webshop.Catalog.Solution/Webshop.Catalog.Api/Webshop.Catalog.Api.csproj
+          - Webshop.Catalog.Solution/Webshop.Help/Webshop.Help.csproj
+          - Webshop.Catalog.Solution/Webshop.ReviewServiceGateway/Webshop.ReviewServiceGateway.csproj
     steps:
     - uses: actions/checkout@v3
 
