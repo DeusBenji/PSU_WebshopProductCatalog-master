@@ -47,6 +47,7 @@ namespace Webshop.Catalog.Application.Test.RequestTests
             Assert.That(validationResults.Errors.Count, Is.EqualTo(1));
             Assert.That(validationResults.Errors[0].ErrorCode, Is.EqualTo("NotEmptyValidator"));
             Assert.That(validationResults.Errors[0].PropertyName, Is.EqualTo("Name"));
+            //Test
         }
 
         [Test]
