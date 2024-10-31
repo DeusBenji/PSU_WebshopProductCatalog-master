@@ -1,6 +1,3 @@
-# .github/workflows/dotnet.yml
-name: Webshop Build
-
 on:
   push:
     branches: [ "main" ]
@@ -12,82 +9,271 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+    
     - name: Setup .NET
       uses: actions/setup-dotnet@v2
       with:
         dotnet-version: 8.0.x
+        
     - name: Cache NuGet packages
       uses: actions/cache@v3
       with:
         path: ~/.nuget/packages
-        key: nuget-${{ hashFiles('**/*.csproj', '**/*.sln') }}
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj', '**/*.sln') }}
         restore-keys: |
-          nuget-
+          ${{ runner.os }}-nuget-
+
     - name: Restore dependencies
       run: dotnet restore Webshop.Catalog.Solution/Webshop.Solution.sln
+      
     - name: Build
       run: dotnet build Webshop.Catalog.Solution/Webshop.Solution.sln --no-restore
+      
     - name: Test
       run: dotnet test Webshop.Catalog.Solution/Webshop.Solution.sln --no-build --verbosity normal
-
-  # Call the reusable workflow for each microservice, explicitly passing secrets
-
+      
   build_deploy_review_service:
     needs: build_test_solution
-    uses: ./.github/workflows/build_and_deploy.yml
-    with:
-      service-path: Webshop.Catalog.Solution/Webshop.Review.API/Webshop.Review.API.csproj
-      docker-tag: benj3249/webshopreviewservice:latest
-    secrets:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: List root directory
+      run: ls -la
+
+    - name: List project directory
+      run: ls -la Webshop.Catalog.Solution/Webshop.Review.API
+      
+    - name: Restore dependencies
+      run: dotnet restore Webshop.Catalog.Solution/Webshop.Review.API/Webshop.Review.API.csproj
+      
+    - name: Build
+      run: dotnet build Webshop.Catalog.Solution/Webshop.Review.API/Webshop.Review.API.csproj --no-restore
+          
+    - name: Test
+      run: dotnet test Webshop.Catalog.Solution/Webshop.Review.API/Webshop.Review.API.csproj --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish Webshop.Catalog.Solution/Webshop.Review.API/Webshop.Review.API.csproj
+
+    - name: Build Docker image
+      working-directory: Webshop.Catalog.Solution
+      run: docker build -f Webshop.Review.API/Dockerfile --force-rm -t benj3249/webshopreviewservice:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+
+    - name: Push Docker image
+      run: docker push benj3249/webshopreviewservice:latest
 
   build_deploy_payment_service:
     needs: build_test_solution
-    uses: ./.github/workflows/build_and_deploy.yml
-    with:
-      service-path: Webshop.Catalog.Solution/Webshop.Payment.Api/Webshop.Payment.Api.csproj
-      docker-tag: benj3249/webshoppaymentapi:latest
-    secrets:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+        
+    - name: List root directory
+      run: ls -la
+
+    - name: List project directory
+      run: ls -la Webshop.Catalog.Solution/Webshop.Payment.Api
+      
+    - name: Restore dependencies
+      run: dotnet restore Webshop.Catalog.Solution/Webshop.Payment.Api/Webshop.Payment.Api.csproj
+      
+    - name: Build
+      run: dotnet build Webshop.Catalog.Solution/Webshop.Payment.Api/Webshop.Payment.Api.csproj --no-restore
+          
+    - name: Test
+      run: dotnet test Webshop.Catalog.Solution/Webshop.Payment.Api/Webshop.Payment.Api.csproj --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish Webshop.Catalog.Solution/Webshop.Payment.Api/Webshop.Payment.Api.csproj
+
+    - name: Build Docker image
+      working-directory: Webshop.Catalog.Solution
+      run: docker build -f Webshop.Payment.Api/Dockerfile --force-rm -t benj3249/webshoppaymentapi:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+
+    - name: Push Docker image
+      run: docker push benj3249/webshoppaymentapi:latest
 
   build_deploy_customer_service:
     needs: build_test_solution
-    uses: ./.github/workflows/build_and_deploy.yml
-    with:
-      service-path: Webshop.Catalog.Solution/Webshop.Customer.Api/Webshop.Customer.Api.csproj
-      docker-tag: benj3249/webshopcustomerapi:latest
-    secrets:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x          
+      
+    - name: Restore dependencies
+      run: dotnet restore Webshop.Catalog.Solution/Webshop.Customer.Api/Webshop.Customer.Api.csproj
+      
+    - name: Build
+      run: dotnet build Webshop.Catalog.Solution/Webshop.Customer.Api/Webshop.Customer.Api.csproj --no-restore
+          
+    - name: Test
+      run: dotnet test Webshop.Catalog.Solution/Webshop.Customer.Api/Webshop.Customer.Api.csproj --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish Webshop.Catalog.Solution/Webshop.Customer.Api/Webshop.Customer.Api.csproj
+
+    - name: Build Docker image
+      working-directory: Webshop.Catalog.Solution
+      run: docker build -f Webshop.Customer.Api/Dockerfile --force-rm -t benj3249/webshopcustomerapi:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+
+    - name: Push Docker image
+      run: docker push benj3249/webshopcustomerapi:latest
 
   build_deploy_catalog_service:
     needs: build_test_solution
-    uses: ./.github/workflows/build_and_deploy.yml
-    with:
-      service-path: Webshop.Catalog.Solution/Webshop.Catalog.Api/Webshop.Catalog.Api.csproj
-      docker-tag: benj3249/webshopcatalogapi:latest
-    secrets:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x          
+      
+    - name: Restore dependencies
+      run: dotnet restore Webshop.Catalog.Solution/Webshop.Catalog.Api/Webshop.Catalog.Api.csproj
+      
+    - name: Build
+      run: dotnet build Webshop.Catalog.Solution/Webshop.Catalog.Api/Webshop.Catalog.Api.csproj --no-restore
+          
+    - name: Test
+      run: dotnet test Webshop.Catalog.Solution/Webshop.Catalog.Api/Webshop.Catalog.Api.csproj --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish Webshop.Catalog.Solution/Webshop.Catalog.Api/Webshop.Catalog.Api.csproj
+
+    - name: Build Docker image
+      working-directory: Webshop.Catalog.Solution
+      run: docker build -f Webshop.Catalog.Api/Dockerfile --force-rm -t benj3249/webshopcatalogapi:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+
+    - name: Push Docker image
+      run: docker push benj3249/webshopcatalogapi:latest
 
   build_deploy_help:
     needs: build_test_solution
-    uses: ./.github/workflows/build_and_deploy.yml
-    with:
-      service-path: Webshop.Catalog.Solution/Webshop.Help/Webshop.Help.csproj
-      docker-tag: benj3249/webshophelp:latest
-    secrets:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x          
+      
+    - name: Restore dependencies
+      run: dotnet restore Webshop.Catalog.Solution/Webshop.Help/Webshop.Help.csproj
+      
+    - name: Build
+      run: dotnet build Webshop.Catalog.Solution/Webshop.Help/Webshop.Help.csproj --no-restore
+          
+    - name: Test
+      run: dotnet test Webshop.Catalog.Solution/Webshop.Help/Webshop.Help.csproj --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish Webshop.Catalog.Solution/Webshop.Help/Webshop.Help.csproj
+
+    - name: Build Docker image
+      working-directory: Webshop.Catalog.Solution
+      run: docker build -f Webshop.Help/Dockerfile --force-rm -t benj3249/webshophelp:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+
+    - name: Push Docker image
+      run: docker push benj3249/webshophelp:latest
 
   build_deploy_gateway:
     needs: build_test_solution
-    uses: ./.github/workflows/build_and_deploy.yml
-    with:
-      service-path: Webshop.Catalog.Solution/Webshop.ReviewServiceGateway/Webshop.ReviewServiceGateway.csproj
-      docker-tag: benj3249/webshopgateway:latest
-    secrets:
-      DOCKER_HUB_USERNAME: ${{ secrets.DOCKER_HUB_USERNAME }}
-      DOCKER_HUB_ACCESS_TOKEN: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+
+    - name: Login to Docker Hub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ secrets.DOCKER_HUB_USERNAME }}
+        password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+      
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x          
+      
+    - name: Restore dependencies
+      run: dotnet restore Webshop.Catalog.Solution/Webshop.ReviewServiceGateway/Webshop.ReviewServiceGateway.csproj
+      
+    - name: Build
+      run: dotnet build Webshop.Catalog.Solution/Webshop.ReviewServiceGateway/Webshop.ReviewServiceGateway.csproj --no-restore
+          
+    - name: Test
+      run: dotnet test Webshop.Catalog.Solution/Webshop.ReviewServiceGateway/Webshop.ReviewServiceGateway.csproj --no-build --verbosity normal
+
+    - name: Publish
+      run: dotnet publish Webshop.Catalog.Solution/Webshop.ReviewServiceGateway/Webshop.ReviewServiceGateway.csproj
+
+    - name: Build Docker image
+      working-directory: Webshop.Catalog.Solution
+      run: docker build -f Webshop.ReviewServiceGateway/Dockerfile --force-rm -t benj3249/webshopgateway:latest --build-arg "BUILD_CONFIGURATION=Debug" .
+
+    - name: Push Docker image
+      run: docker push benj3249/webshopgateway:latest
