@@ -63,4 +63,7 @@ namespace Webshop.Customer.Api.Controllers
         private IActionResult StatusCodeFromResult(Result result)
            => StatusCode(result.Error.StatusCode, Envelope.Error(result.Error.Code));
     }
+
+
+
 }
