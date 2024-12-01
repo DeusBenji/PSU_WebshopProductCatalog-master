@@ -36,19 +36,19 @@ namespace Webshop.Catalog.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody]CreateProductRequest request)
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request)
         {
             CreateProductRequest.Validator validator = new CreateProductRequest.Validator();
             var validationResult = await validator.ValidateAsync(request);
             if (validationResult.IsValid)
             {
                 CreateProductCommand command = new CreateProductCommand(request.Name, request.SKU, request.Price, request.Currency);
-                var commandResult = await this.dispatcher.Dispatch(command);
+                var commandResult = await dispatcher.Dispatch(command);
                 return FromResult(commandResult);
             }
             else
             {
-                this.logger.LogError(string.Join(",", validationResult.Errors.Select(e=>e.ErrorMessage)));
+                logger.LogError(string.Join(",", validationResult.Errors.Select(e => e.ErrorMessage)));
                 return Error(validationResult.Errors);
             }
         }
@@ -62,12 +62,12 @@ namespace Webshop.Catalog.Api.Controllers
             if (validationResult.IsValid)
             {
                 UpdateProductCommand command = new UpdateProductCommand(request.Id, request.Name, request.Description, request.SKU, request.AmountInStock, request.Price, request.Currency, request.MinStock);
-                var commandResult = await this.dispatcher.Dispatch(command);
+                var commandResult = await dispatcher.Dispatch(command);
                 return FromResult(commandResult);
             }
             else
             {
-                this.logger.LogError(string.Join(",", validationResult.Errors.Select(e => e.ErrorMessage)));
+                logger.LogError(string.Join(",", validationResult.Errors.Select(e => e.ErrorMessage)));
                 return Error(validationResult.Errors);
             }
         }
@@ -76,8 +76,8 @@ namespace Webshop.Catalog.Api.Controllers
         [Route("{productid}/categories/{categoryid}")]
         public async Task<IActionResult> AttachProductToCategory(int productid, int categoryid)
         {
-           AttachProductToCategoryCommand command = new AttachProductToCategoryCommand(productid, categoryid);
-            var result = await this.dispatcher.Dispatch(command);
+            AttachProductToCategoryCommand command = new AttachProductToCategoryCommand(productid, categoryid);
+            var result = await dispatcher.Dispatch(command);
             return Ok();
         }
 
@@ -86,7 +86,7 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> DetachProductFromCategory(int productid, int categoryid)
         {
             DetachProductFromCategoryCommand command = new DetachProductFromCategoryCommand(productid, categoryid);
-            var result = await this.dispatcher.Dispatch(command);
+            var result = await dispatcher.Dispatch(command);
             return Ok();
         }
 
@@ -95,7 +95,7 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> DeleteProduct(int id)
         {
             DeleteProductCommand command = new DeleteProductCommand(id);
-            var commandResult = await this.dispatcher.Dispatch(command);
+            var commandResult = await dispatcher.Dispatch(command);
             return FromResult(commandResult);
         }
 
@@ -104,7 +104,7 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> GetProduct(int id)
         {
             GetProductQuery query = new GetProductQuery(id);
-            var result = await this.dispatcher.Dispatch(query);
+            var result = await dispatcher.Dispatch(query);
             return FromResult<ProductDto>(result);
         }
 
@@ -113,7 +113,7 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> GetProductCategories(int id)
         {
             GetCategoriesForProductQuery query = new GetCategoriesForProductQuery(id);
-            var result = await this.dispatcher.Dispatch(query);
+            var result = await dispatcher.Dispatch(query);
             return FromResult<IEnumerable<CategoryDto>>(result);
         }
     }

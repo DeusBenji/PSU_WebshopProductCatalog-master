@@ -35,7 +35,7 @@ namespace Webshop.Catalog.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody]CreateCategoryRequest request)
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request)
         {
             //check incoming request
             CreateCategoryRequest.Validator validator = new CreateCategoryRequest.Validator();
@@ -55,14 +55,14 @@ namespace Webshop.Catalog.Api.Controllers
             }
             else
             {
-                this.logger.LogError(string.Join(",", result.Errors.Select(x => x.ErrorMessage)));
+                logger.LogError(string.Join(",", result.Errors.Select(x => x.ErrorMessage)));
                 return Error(result.Errors);
-            }            
+            }
         }
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateCategory([FromBody]UpdateCategoryRequest request, int id)
+        public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequest request, int id)
         {
             //check incoming request
             UpdateCategoryRequest.Validator validator = new UpdateCategoryRequest.Validator();
@@ -75,7 +75,7 @@ namespace Webshop.Catalog.Api.Controllers
             }
             else
             {
-                this.logger.LogError(string.Join(",", result.Errors.Select(x => x.ErrorMessage)));
+                logger.LogError(string.Join(",", result.Errors.Select(x => x.ErrorMessage)));
                 return Error(result.Errors);
             }
         }
@@ -93,14 +93,14 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> GetRootCategories(bool includeChildren)
         {
             GetCategoriesQuery query = new GetCategoriesQuery(includeChildren);
-            var result = await this.dispatcher.Dispatch(query);
+            var result = await dispatcher.Dispatch(query);
             if (result.Success)
             {
                 return FromResult<List<CategoryDto>>(result);
             }
             else
             {
-                this.logger.LogError(string.Join(",", result.Error.Message));
+                logger.LogError(string.Join(",", result.Error.Message));
                 return Error(result.Error);
             }
         }
@@ -110,14 +110,14 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> GetCategory(int id)
         {
             GetCategoryQuery query = new GetCategoryQuery(id);
-            var result = await this.dispatcher.Dispatch(query);
+            var result = await dispatcher.Dispatch(query);
             if (result.Success)
             {
                 return FromResult<CategoryDto>(result);
             }
             else
             {
-                this.logger.LogError(string.Join(",", result.Error.Message));
+                logger.LogError(string.Join(",", result.Error.Message));
                 return Error(result.Error);
             }
         }
@@ -127,14 +127,14 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> GetChildCategories(int id)
         {
             GetChildCategoriesQuery query = new GetChildCategoriesQuery(id);
-            var result = await this.dispatcher.Dispatch(query);
+            var result = await dispatcher.Dispatch(query);
             if (result.Success)
             {
                 return FromResult<IEnumerable<CategoryDto>>(result);
             }
             else
             {
-                this.logger.LogError(string.Join(",", result.Error.Message));
+                logger.LogError(string.Join(",", result.Error.Message));
                 return Error(result.Error);
             }
         }
@@ -144,7 +144,7 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> GetCategoryProducts(int id)
         {
             GetProductsQuery getProductsQuery = new GetProductsQuery(id);
-            var queryResult = await this.dispatcher.Dispatch(getProductsQuery);
+            var queryResult = await dispatcher.Dispatch(getProductsQuery);
             return FromResult<IEnumerable<ProductDto>>(queryResult);
         }
     }
