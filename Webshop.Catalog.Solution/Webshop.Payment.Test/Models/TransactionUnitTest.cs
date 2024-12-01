@@ -1,24 +1,24 @@
-﻿using PSU_PaymentGateway.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Webshop.Payment.Api.Models;
 using Xunit;
 
-namespace PSU_PaymentGatewayTest.Models
+namespace Webshop.Payment.Test.Models
 {
     [Category("Transaction Unit Tests")]
     public class TransactionUnitTest
-    {        
+    {
         [Fact]
         public void Valid_Transaction_Expect_True()
         {
             //Arrange
             Result<Payment> paymentResult = Payment.Create("123", "11/11", 123);
             //Act
-            Result result = Transaction.Create(1, paymentResult.Value);                        
+            Result result = Transaction.Create(1, paymentResult.Value);
             //Assert
             Assert.True(result.IsSuccess);
         }

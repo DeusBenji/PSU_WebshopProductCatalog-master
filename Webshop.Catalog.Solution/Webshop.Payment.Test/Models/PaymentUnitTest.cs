@@ -1,13 +1,13 @@
-﻿using PSU_PaymentGateway.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Webshop.Payment.Api.Models;
 using Xunit;
 
-namespace PSU_PaymentGatewayTest.Models
+namespace Webshop.Payment.Test.Models
 {
     [Category("Model Unit Tests")]
     public class PaymentUnitTest

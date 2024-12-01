@@ -2,21 +2,21 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using PSU_PaymentGateway.Models;
-using PSU_PaymentGateway.Repository;
-using PSU_PaymentGateway.Services;
 using Serilog;
 using System;
 using System.Threading.Tasks;
+using Webshop.Payment.Api.Models;
+using Webshop.Payment.Api.Repository;
+using Webshop.Payment.Api.Services;
 
-namespace PSU_PaymentGateway.Controllers
+namespace Webshop.Payment.Api.Controllers
 {
     [Route("api/payment")]
     [ApiController]
     public class PaymentController : ControllerBase
     {
         private IMemoryRepository transactionRepository;
-        private IThrottleService throttleService;        
+        private IThrottleService throttleService;
         private ILogger<PaymentController> logger;
         public PaymentController(IMemoryRepository transactionRepository, IThrottleService throttleService, ILogger<PaymentController> logger)
         {
@@ -30,7 +30,7 @@ namespace PSU_PaymentGateway.Controllers
         public Result<Transaction> ProcessPayment(PaymentRequest request)
         {
             //check for throttling
-            if(!this.throttleService.CanExecute())
+            if (!throttleService.CanExecute())
             {
                 return Result.Fail<Transaction>("The Payment service is not ready");
             }
@@ -41,7 +41,7 @@ namespace PSU_PaymentGateway.Controllers
                 Result<Transaction> transactionResult = Transaction.Create(request.Amount, paymentResult.Value);
                 if (transactionResult.IsSuccess)
                 {
-                    Result result = this.transactionRepository.AddTransaction(transactionResult.Value);
+                    Result result = transactionRepository.AddTransaction(transactionResult.Value);
                     if (result.IsFailure)
                     {
                         return Result.Fail<Transaction>(result.Error);
@@ -51,7 +51,7 @@ namespace PSU_PaymentGateway.Controllers
             }
             else
             {
-                logger.LogWarning("Unable to create new Payment object with the following error: {error}", new {error=paymentResult.Error});
+                logger.LogWarning("Unable to create new Payment object with the following error: {error}", new { error = paymentResult.Error });
                 return Result.Fail<Transaction>(paymentResult.Error);
             }
         }

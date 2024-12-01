@@ -10,7 +10,7 @@ using Webshop.Catalog.Application.Contracts.Persistence;
 using Webshop.Catalog.Domain.AggregateRoots;
 using Webshop.Domain.Common;
 
-namespace Webshop.Category.Application.Features.Category.Commands.UpdateCategory
+namespace Webshop.Catalog.Application.Features.Category.Commands.UpdateCategory
 {
     public class UpdateCategoryCommandHandler : ICommandHandler<UpdateCategoryCommand>
     {
@@ -26,15 +26,15 @@ namespace Webshop.Category.Application.Features.Category.Commands.UpdateCategory
         {
             try
             {
-                Catalog.Domain.AggregateRoots.Category category = new Catalog.Domain.AggregateRoots.Category(command.Name);
+                Domain.AggregateRoots.Category category = new Domain.AggregateRoots.Category(command.Name);
                 category.Description = command.Description;
                 category.Id = command.Id;
-                await this.categoryRepository.UpdateAsync(category);
+                await categoryRepository.UpdateAsync(category);
                 return Result.Ok();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                this.logger.LogCritical(ex, ex.Message);
+                logger.LogCritical(ex, ex.Message);
                 return Result.Fail(Errors.General.UnspecifiedError(ex.Message));
             }
         }

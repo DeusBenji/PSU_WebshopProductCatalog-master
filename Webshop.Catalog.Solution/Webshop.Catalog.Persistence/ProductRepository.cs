@@ -17,17 +17,17 @@ namespace Webshop.Catalog.Persistence
 
         public async Task<Result> AddProductToCategory(int productId, int categoryId)
         {
-            using(var connection = dataContext.CreateConnection())
+            using (var connection = dataContext.CreateConnection())
             {
                 string command = $"insert into {TableNames.Catalog.PRODUCTCATEGORYTABLE} (productId, categoryId) values (@pid, @cid)";
-                await connection.ExecuteAsync(command, new {pid = productId, cid = categoryId});
+                await connection.ExecuteAsync(command, new { pid = productId, cid = categoryId });
                 return Result.Ok();
             }
         }
 
         public async Task CreateAsync(Product entity)
         {
-            using(var connection  = dataContext.CreateConnection())
+            using (var connection = dataContext.CreateConnection())
             {
                 string command = $"insert into {TableName} (Name, SKU, Price, Currency, Description, AmountInStock, MinStock) values (@name, @sku, @price, @currency, @description, @stock, @minstock)";
                 await connection.ExecuteAsync(command, new
@@ -67,7 +67,7 @@ namespace Webshop.Catalog.Persistence
             using (var connection = dataContext.CreateConnection())
             {
                 string query = $"select * from {TableName} a join {TableNames.Catalog.PRODUCTCATEGORYTABLE} b on a.Id = b.ProductId where b.CategoryId = @categoryid";
-                return await connection.QueryAsync<Product>(query, new {categoryid = categoryId});
+                return await connection.QueryAsync<Product>(query, new { categoryid = categoryId });
             }
         }
 
@@ -76,7 +76,7 @@ namespace Webshop.Catalog.Persistence
             using (var connection = dataContext.CreateConnection())
             {
                 string query = $"select * from {TableName} where id = @id";
-                return await connection.QuerySingleAsync<Product>(query, new {id = id});
+                return await connection.QuerySingleAsync<Product>(query, new { id = id });
             }
         }
 
@@ -95,14 +95,15 @@ namespace Webshop.Catalog.Persistence
             using (var connection = dataContext.CreateConnection())
             {
                 string command = $"update {TableName} set name = @name, description =  @desc, currency = @curr, price = @price, AmountInStock = @amount, MinStock = @min where id = @id";
-                await connection.ExecuteAsync(command, new { 
-                    name = entity.Name, 
-                    desc = entity.Description, 
-                    curr = entity.Currency, 
-                    price = entity.Price, 
-                    amount = entity.AmountInStock, 
-                    min = entity.MinStock, 
-                    id = entity.Id 
+                await connection.ExecuteAsync(command, new
+                {
+                    name = entity.Name,
+                    desc = entity.Description,
+                    curr = entity.Currency,
+                    price = entity.Price,
+                    amount = entity.AmountInStock,
+                    min = entity.MinStock,
+                    id = entity.Id
                 });
 
             }

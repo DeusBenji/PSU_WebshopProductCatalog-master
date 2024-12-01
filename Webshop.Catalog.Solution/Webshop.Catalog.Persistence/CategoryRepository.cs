@@ -15,7 +15,7 @@ namespace Webshop.Catalog.Persistence
         public CategoryRepository(DataContext context) : base(TableNames.Catalog.CATEGORYTABLE, context) { }
         public async Task CreateAsync(Catalog.Domain.AggregateRoots.Category entity)
         {
-            using(var connection = dataContext.CreateConnection())
+            using (var connection = dataContext.CreateConnection())
             {
                 string command = $"insert into {TableName} (Name, ParentId, Description) values (@name, @parentid, @description)";
                 await connection.ExecuteAsync(command, new { name = entity.Name, parentid = entity.ParentId, description = entity.Description });
@@ -38,7 +38,7 @@ namespace Webshop.Catalog.Persistence
                 var category = await GetById(parentId);
                 return category != null;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 //probably returned an exception for an empty result. This means that it does not exist.
                 return false;
@@ -47,7 +47,7 @@ namespace Webshop.Catalog.Persistence
 
         public async Task<IEnumerable<Domain.AggregateRoots.Category>> GetAll()
         {
-            using(var connection = dataContext.CreateConnection())
+            using (var connection = dataContext.CreateConnection())
             {
                 string query = $"select * from {TableName}";
                 return await connection.QueryAsync<Domain.AggregateRoots.Category>(query);
@@ -59,7 +59,7 @@ namespace Webshop.Catalog.Persistence
             using (var connection = dataContext.CreateConnection())
             {
                 string query = $"select * from {TableName} where id = @id";
-                return await connection.QuerySingleAsync<Domain.AggregateRoots.Category>(query, new {id = id});
+                return await connection.QuerySingleAsync<Domain.AggregateRoots.Category>(query, new { id = id });
             }
         }
 
@@ -68,7 +68,7 @@ namespace Webshop.Catalog.Persistence
             using (var connection = dataContext.CreateConnection())
             {
                 string query = $"select * from {TableName} where parentid = @parentCategory";
-                return await connection.QueryAsync<Domain.AggregateRoots.Category>(query, new {parentCategory = parentCategory});
+                return await connection.QueryAsync<Domain.AggregateRoots.Category>(query, new { parentCategory = parentCategory });
             }
         }
 
@@ -95,7 +95,7 @@ namespace Webshop.Catalog.Persistence
             using (var connection = dataContext.CreateConnection())
             {
                 string command = $"update {TableName} set Name = @name, Description = @description where id = @id";
-                await connection.ExecuteAsync(command, new {name = entity.Name, description = entity.Description, id = entity.Id});
+                await connection.ExecuteAsync(command, new { name = entity.Name, description = entity.Description, id = entity.Id });
             }
         }
     }

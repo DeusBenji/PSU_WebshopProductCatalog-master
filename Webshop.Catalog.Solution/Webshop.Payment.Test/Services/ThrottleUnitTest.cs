@@ -3,13 +3,14 @@ using PSU_PaymentGateway.Services;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Webshop.Payment.Api.Services;
 using Xunit;
 
-namespace PSU_PaymentGatewayTest
+namespace Webshop.Payment.Test.Services
 {
     [Category("Service Tests")]
     public class ThrottleUnitTest
-    {        
+    {
         private IConfiguration getConfiguration(int limit = 0)
         {
             var inMemorySettings = new Dictionary<string, string> {
@@ -24,7 +25,7 @@ namespace PSU_PaymentGatewayTest
         public ThrottleUnitTest()
         {
             //setup the config
-           
+
         }
 
         [Fact]
@@ -44,7 +45,7 @@ namespace PSU_PaymentGatewayTest
             //Arrange - first create an action to hold the constructor method call
             Action a = () => new ThrottleService(getConfiguration(-1));
             //Act - the constructor throws an exception
-            Assert.Throws<ArgumentOutOfRangeException>(()=>a());
+            Assert.Throws<ArgumentOutOfRangeException>(() => a());
         }
 
         [Fact]

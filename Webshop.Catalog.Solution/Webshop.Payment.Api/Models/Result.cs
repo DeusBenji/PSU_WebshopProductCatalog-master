@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace PSU_PaymentGateway.Models
+namespace Webshop.Payment.Api.Models
 {
     public class Result
     {
@@ -29,7 +29,7 @@ namespace PSU_PaymentGateway.Models
 
         public static Result<T> Fail<T>(string message)
         {
-            return new Result<T>(default(T), false, message);
+            return new Result<T>(default, false, message);
         }
 
         public static Result Ok()

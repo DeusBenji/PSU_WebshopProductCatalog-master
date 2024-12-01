@@ -1,16 +1,17 @@
-﻿using PSU_PaymentGateway.Models;
-using PSU_PaymentGateway.Repository;
+﻿using PSU_PaymentGateway.Repository;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Webshop.Payment.Api.Models;
+using Webshop.Payment.Api.Repository;
 using Xunit;
 
-namespace PSU_PaymentGatewayTest.Repository
+namespace Webshop.Payment.Test.Repository
 {
-    [Category("Repository Unit Tests")]     
+    [Category("Repository Unit Tests")]
     public class MemoryRepositoryUnitTest
     {
         [Fact]
@@ -21,7 +22,7 @@ namespace PSU_PaymentGatewayTest.Repository
             Transaction transaction = Transaction.Create(1, paymentResult.Value).Value;
             IMemoryRepository memoryRepository = new MemoryRepository();
             //Act
-            Result result = memoryRepository.AddTransaction(transaction);            
+            Result result = memoryRepository.AddTransaction(transaction);
             //Assert
             Assert.True(result.IsSuccess);
         }
