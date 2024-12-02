@@ -16,7 +16,7 @@ using Webshop.Catalog.Application.Features.Product.Queries.GetProduct;
 using Webshop.Catalog.Application.Features.Product.Queries.GetProducts;
 using Webshop.Catalog.Application.Features.Product.Requests;
 using Webshop.Catalog.Application.Features.Category.Queries.GetCategoriesForProduct;
-using Webshop.Category.Application.Features.Category.Dtos;
+using Webshop.Catalog.Application.Features.Category.Dtos;
 
 namespace Webshop.Catalog.Api.Controllers
 {

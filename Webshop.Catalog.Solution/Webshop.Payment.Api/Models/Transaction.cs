@@ -2,10 +2,10 @@
 using Microsoft.Extensions.Logging;
 using System;
 
-namespace PSU_PaymentGateway.Models
+namespace Webshop.Payment.Api.Models
 {
     public class Transaction
-    {        
+    {
         private Transaction(int amount, Payment payment)
         {
             Amount = amount;
@@ -19,8 +19,8 @@ namespace PSU_PaymentGateway.Models
             try
             {
                 Ensure.That(amount, nameof(amount)).IsGt<int>(0);
-                Ensure.That(payment, nameof(payment)).IsNotNull<Payment>();                
-                return Result.Ok<Transaction>(new Transaction(amount, payment));
+                Ensure.That(payment, nameof(payment)).IsNotNull();
+                return Result.Ok(new Transaction(amount, payment));
             }
             catch (Exception ex)
             {

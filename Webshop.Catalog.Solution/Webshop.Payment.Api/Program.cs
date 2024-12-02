@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace PSU_PaymentGateway
+namespace Webshop.Payment.Api
 {
     public class Program
     {

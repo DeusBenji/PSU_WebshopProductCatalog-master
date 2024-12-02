@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Webshop.Application.Contracts;
 
-namespace Webshop.Category.Application.Features.Category.Commands.CreateCategory
+namespace Webshop.Catalog.Application.Features.Category.Commands.CreateCategory
 {
     public class CreateCategoryCommand : ICommand
     {
@@ -13,7 +13,7 @@ namespace Webshop.Category.Application.Features.Category.Commands.CreateCategory
         {
             Name = name;
             Description = description;
-            this.ParentId = parentId;
+            ParentId = parentId;
         }
 
         public string Name { get; private set; }

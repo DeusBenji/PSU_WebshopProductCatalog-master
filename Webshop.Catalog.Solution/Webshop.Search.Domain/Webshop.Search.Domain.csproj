@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+	</PropertyGroup>
+
+	<ItemGroup>
+	  <PackageReference Include="AutoMapper" Version="11.0.1" />
+	  <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
+	  <PackageReference Include="Dapper" Version="2.1.35" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Webshop.Domain\Webshop.Domain.csproj" />
+	</ItemGroup>
+
+</Project>

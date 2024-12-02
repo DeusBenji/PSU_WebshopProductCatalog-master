@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-using Webshop.Customer.Api.Utilities;
+using Webshop.Catalog.Api.Utilities;
 using Webshop.Domain.Common;
 using Webshop.Domain.ValueObjects;
 

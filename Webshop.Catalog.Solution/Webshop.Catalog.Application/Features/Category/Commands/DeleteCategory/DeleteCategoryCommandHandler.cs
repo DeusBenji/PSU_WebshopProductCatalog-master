@@ -9,7 +9,7 @@ using Webshop.Application.Contracts;
 using Webshop.Catalog.Application.Contracts.Persistence;
 using Webshop.Domain.Common;
 
-namespace Webshop.Category.Application.Features.Category.Commands.DeleteCategory
+namespace Webshop.Catalog.Application.Features.Category.Commands.DeleteCategory
 {
     public class DeleteCategoryCommandHandler : ICommandHandler<DeleteCategoryCommand>
     {
@@ -25,12 +25,12 @@ namespace Webshop.Category.Application.Features.Category.Commands.DeleteCategory
         {
             try
             {
-                await this.categoryRepository.DeleteAsync(command.CategoryId);
+                await categoryRepository.DeleteAsync(command.CategoryId);
                 return Result.Ok();
-            } 
-            catch(Exception ex)
+            }
+            catch (Exception ex)
             {
-                this.logger.LogCritical(ex, ex.Message);
+                logger.LogCritical(ex, ex.Message);
                 return Result.Fail(Errors.General.UnspecifiedError(ex.Message));
             }
         }

@@ -1,4 +1,4 @@
-using Webshop.Category.Application.Features.Category.Requests;
+using Webshop.Catalog.Application.Features.Category.Requests;
 
 namespace Webshop.Catalog.Application.Test.RequestTests
 {

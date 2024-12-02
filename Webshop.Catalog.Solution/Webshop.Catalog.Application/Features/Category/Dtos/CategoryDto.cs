@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Webshop.Category.Application.Features.Category.Dtos
+namespace Webshop.Catalog.Application.Features.Category.Dtos
 {
     public class CategoryDto
     {

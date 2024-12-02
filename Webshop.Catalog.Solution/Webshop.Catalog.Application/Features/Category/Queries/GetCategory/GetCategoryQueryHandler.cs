@@ -8,16 +8,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Webshop.Application.Contracts;
 using Webshop.Catalog.Application.Contracts.Persistence;
-using Webshop.Category.Application.Features.Category.Dtos;
+using Webshop.Catalog.Application.Features.Category.Dtos;
 using Webshop.Domain.Common;
 
-namespace Webshop.Category.Application.Features.Category.Queries.GetCategory
+namespace Webshop.Catalog.Application.Features.Category.Queries.GetCategory
 {
     public class GetCategoryQueryHandler : IQueryHandler<GetCategoryQuery, CategoryDto>
     {
         private ILogger<GetCategoryQueryHandler> logger;
         private IMapper mapper;
-        private ICategoryRepository categoryRepository;        
+        private ICategoryRepository categoryRepository;
         public GetCategoryQueryHandler(ILogger<GetCategoryQueryHandler> logger, ICategoryRepository categoryRepository, IMapper mapper)
         {
             this.logger = logger;
@@ -29,13 +29,13 @@ namespace Webshop.Category.Application.Features.Category.Queries.GetCategory
         {
             try
             {
-                var queryResult = await this.categoryRepository.GetById(query.CategoryId);
-                var categoryDto = this.mapper.Map<CategoryDto>(queryResult);
+                var queryResult = await categoryRepository.GetById(query.CategoryId);
+                var categoryDto = mapper.Map<CategoryDto>(queryResult);
                 return categoryDto;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                this.logger.LogCritical(ex, ex.Message);
+                logger.LogCritical(ex, ex.Message);
                 return Result.Fail<CategoryDto>(Errors.General.UnspecifiedError(ex.Message));
             }
         }
