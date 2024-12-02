@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Webshop.Application.Contracts;
 
-namespace Webshop.Category.Application.Features.Category.Commands.UpdateCategory
+namespace Webshop.Catalog.Application.Features.Category.Commands.UpdateCategory
 {
     public class UpdateCategoryCommand : ICommand
     {

@@ -8,14 +8,18 @@ using System.Threading.Tasks;
 using Webshop.Application.Contracts;
 using Webshop.Catalog.Application.Features.Product.Dtos;
 using Webshop.Catalog.Application.Features.Product.Queries.GetProducts;
-using Webshop.Category.Application.Features.Category.Commands.CreateCategory;
-using Webshop.Category.Application.Features.Category.Commands.DeleteCategory;
-using Webshop.Category.Application.Features.Category.Commands.UpdateCategory;
-using Webshop.Category.Application.Features.Category.Dtos;
-using Webshop.Category.Application.Features.Category.Queries.GetCategories;
-using Webshop.Category.Application.Features.Category.Queries.GetCategory;
-using Webshop.Category.Application.Features.Category.Queries.GetChildCategories;
-using Webshop.Category.Application.Features.Category.Requests;
+using Webshop.Catalog.Application.Features.Category.Dtos;
+using Webshop.Catalog.Application.Features.Category.Queries.GetCategories;
+using Webshop.Catalog.Application.Features.Category.Queries.GetCategory;
+using Webshop.Catalog.Application.Features.Category.Queries.GetChildCategories;
+using Webshop.Catalog.Application.Features.Category.Queries.GetCategory;
+using Webshop.Catalog.Application.Features.Category.Requests;
+using Webshop.Catalog.Application.Features.Category.Commands.CreateCategory;
+using Webshop.Catalog.Application.Features.Category.Commands.DeleteCategory;
+using Webshop.Catalog.Application.Features.Category.Commands.UpdateCategory;
+
+
+
 using Webshop.Domain.Common;
 
 namespace Webshop.Catalog.Api.Controllers

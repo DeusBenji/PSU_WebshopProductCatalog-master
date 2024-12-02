@@ -8,10 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Webshop.Application.Contracts;
 using Webshop.Catalog.Application.Contracts.Persistence;
-using Webshop.Category.Application.Features.Category.Dtos;
+using Webshop.Catalog.Application.Features.Category.Dtos;
 using Webshop.Domain.Common;
 
-namespace Webshop.Category.Application.Features.Category.Queries.GetCategories
+namespace Webshop.Catalog.Application.Features.Category.Queries.GetCategories
 {
     public class GetCategoriesQueryHandler : IQueryHandler<GetCategoriesQuery, List<CategoryDto>>
     {
@@ -29,18 +29,18 @@ namespace Webshop.Category.Application.Features.Category.Queries.GetCategories
         {
             try
             {
-                if(query.IncludeChildCategories)
+                if (query.IncludeChildCategories)
                 {
-                    var rootCategories = await this.categoryRepository.GetRootCategories();
-                    foreach(var category in rootCategories)
+                    var rootCategories = await categoryRepository.GetRootCategories();
+                    foreach (var category in rootCategories)
                     {
                         category.ChildCategories = await GetFullyLoadedCategories(category);
                     }
                     //build the dtos
                     List<CategoryDto> resultDtos = new List<CategoryDto>();
-                    foreach(var cat in rootCategories)
+                    foreach (var cat in rootCategories)
                     {
-                        var catDto = this.mapper.Map<CategoryDto>(cat);
+                        var catDto = mapper.Map<CategoryDto>(cat);
                         resultDtos.Add(catDto);
                         catDto.Categories = TransformToDto(cat);
                     }
@@ -49,39 +49,39 @@ namespace Webshop.Category.Application.Features.Category.Queries.GetCategories
                 else
                 {
                     List<CategoryDto> resultCategories = new List<CategoryDto>();
-                    var categories = await this.categoryRepository.GetRootCategories();
-                    foreach(var cat in categories)
+                    var categories = await categoryRepository.GetRootCategories();
+                    foreach (var cat in categories)
                     {
-                        resultCategories.Add(this.mapper.Map<CategoryDto>(cat));
+                        resultCategories.Add(mapper.Map<CategoryDto>(cat));
                     }
                     return resultCategories;
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                this.logger.LogCritical(ex, ex.Message);
+                logger.LogCritical(ex, ex.Message);
                 return Result.Fail<List<CategoryDto>>(Errors.General.UnspecifiedError(ex.Message));
             }
         }
 
-        private async Task<IEnumerable<Catalog.Domain.AggregateRoots.Category>> GetFullyLoadedCategories(Catalog.Domain.AggregateRoots.Category parentCategory)
+        private async Task<IEnumerable<Domain.AggregateRoots.Category>> GetFullyLoadedCategories(Domain.AggregateRoots.Category parentCategory)
         {
-            var categories = await this.categoryRepository.GetChildCategories(parentCategory.Id);
-            foreach(var category in categories)
+            var categories = await categoryRepository.GetChildCategories(parentCategory.Id);
+            foreach (var category in categories)
             {
                 category.ChildCategories = await GetFullyLoadedCategories(category);
             }
             return categories;
         }
 
-        private List<CategoryDto> TransformToDto(Catalog.Domain.AggregateRoots.Category category)
+        private List<CategoryDto> TransformToDto(Domain.AggregateRoots.Category category)
         {
             List<CategoryDto> result = new List<CategoryDto>();
-            foreach(var cat in category.ChildCategories)
+            foreach (var cat in category.ChildCategories)
             {
-                var catDto = this.mapper.Map<CategoryDto>(cat);
+                var catDto = mapper.Map<CategoryDto>(cat);
                 catDto.Categories = TransformToDto(cat);
-                result.Add(catDto);                
+                result.Add(catDto);
             }
             return result;
         }

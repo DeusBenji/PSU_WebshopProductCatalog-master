@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Webshop.Application.Contracts;
 using Webshop.Catalog.Application.Contracts.Persistence;
-using Webshop.Category.Application.Features.Category.Dtos;
+using Webshop.Catalog.Application.Features.Category.Dtos;
 using Webshop.Domain.Common;
 
 namespace Webshop.Catalog.Application.Features.Category.Queries.GetCategoriesForProduct

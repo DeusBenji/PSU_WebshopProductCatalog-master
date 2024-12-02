@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Webshop.Application.Contracts;
+using Webshop.Catalog.Application.Features.Category.Dtos;
 using Webshop.Catalog.Domain.AggregateRoots;
-using Webshop.Category.Application.Features.Category.Dtos;
 
-namespace Webshop.Category.Application.Features.Category.Queries.GetCategories
+namespace Webshop.Catalog.Application.Features.Category.Queries.GetCategories
 {
     public class GetCategoriesQuery : IQuery<List<CategoryDto>>
     {

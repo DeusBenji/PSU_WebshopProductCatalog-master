@@ -8,10 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using Webshop.Application.Contracts;
 using Webshop.Catalog.Application.Contracts.Persistence;
-using Webshop.Category.Application.Features.Category.Dtos;
+using Webshop.Catalog.Application.Features.Category.Dtos;
 using Webshop.Domain.Common;
 
-namespace Webshop.Category.Application.Features.Category.Queries.GetChildCategories
+namespace Webshop.Catalog.Application.Features.Category.Queries.GetChildCategories
 {
     public class GetChildCategoriesQueryHandler : IQueryHandler<GetChildCategoriesQuery, IEnumerable<CategoryDto>>
     {
@@ -29,12 +29,12 @@ namespace Webshop.Category.Application.Features.Category.Queries.GetChildCategor
         {
             try
             {
-                var childCategoriesResult = await this.categoryRepository.GetChildCategories(query.ParentCategoryId);
-                return Result.Ok(this.mapper.Map<IEnumerable<CategoryDto>>(childCategoriesResult));
+                var childCategoriesResult = await categoryRepository.GetChildCategories(query.ParentCategoryId);
+                return Result.Ok(mapper.Map<IEnumerable<CategoryDto>>(childCategoriesResult));
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
-                this.logger.LogCritical(ex, ex.Message);
+                logger.LogCritical(ex, ex.Message);
                 return Result.Fail<IEnumerable<CategoryDto>>(Errors.General.UnspecifiedError(ex.Message));
             }
         }

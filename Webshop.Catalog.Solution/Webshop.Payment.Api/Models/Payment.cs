@@ -1,7 +1,7 @@
 ﻿using EnsureThat;
 using System;
 
-namespace PSU_PaymentGateway.Models
+namespace Webshop.Payment.Api.Models
 {
     /// <summary>
     /// This is the entity payment
@@ -12,7 +12,7 @@ namespace PSU_PaymentGateway.Models
         {
             try
             {
-                return Result.Ok<Payment>(new Payment(cardnumber, expirationDate, cvc));
+                return Result.Ok(new Payment(cardnumber, expirationDate, cvc));
             }
             catch (Exception e)
             {
