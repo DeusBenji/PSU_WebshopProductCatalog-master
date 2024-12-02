@@ -3,7 +3,7 @@ services:
   help:
     # SeQ is a framework for logging of exceptions etc
     container_name: webshophelp
-    image: brhv/webshophelp
+    image: benj3249/webshophelp
     restart: unless-stopped
     ports:
       - 8000:8080     
@@ -35,7 +35,7 @@ services:
   paymentapi:
    # the payment API
     container_name: webshop.payment
-    image: brhv/webshoppaymentapi
+    image: benj3249/webshoppaymentapi
     restart: unless-stopped
     ports:
       - 8083:8080
@@ -44,7 +44,7 @@ services:
   catalogapi:
   # the catalog API
     container_name: webshop.catalog
-    image: brhv/webshopcatalogapi
+    image: benj3249/webshopcatalogapi
     restart: unless-stopped
     ports:
         - 8084:8080
@@ -53,7 +53,7 @@ services:
   customerapi:
   # the customer API
     container_name: webshop.customer
-    image: brhv/webshopcustomerapi
+    image: benj3249/webshopcustomerapi
     restart: unless-stopped
     ports:
         - 8085:8080
@@ -62,7 +62,7 @@ services:
   reviewapi-1:
    # the review API
     container_name: webshop.review
-    image: brhv/webshopreviewservice
+    image: benj3249/webshopreviewservice
     restart: unless-stopped
     ports:
       - 8086:8080
@@ -73,7 +73,7 @@ services:
   reviewapi-2:
    # the review API - 2 for load balancing
     container_name: webshop.review
-    image: brhv/webshopreviewservice
+    image: benj3249/webshopreviewservice
     restart: unless-stopped
     ports:
       - 8087:8080
@@ -84,7 +84,7 @@ services:
   reviewgateway:
    # the review APIgateway
     container_name: webshop.reviewgateway
-    image: brhv/webshopgateway
+    image: benj3249/webshopgateway
     restart: unless-stopped
     ports:
       - 8089:8080
