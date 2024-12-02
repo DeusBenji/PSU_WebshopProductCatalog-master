@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using AutoMapper;
+using MediatR;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using MediatR;
 using Webshop.Search.Application.Contracts.Persistence;
 using Webshop.Search.Application.Features.SearchProduct.Dtos;
 
@@ -11,10 +11,12 @@ namespace Webshop.Search.Application.Features.SearchProduct.Queries.SearchProduc
     public class SearchProductsQueryHandler : IRequestHandler<SearchProductsQuery, IEnumerable<SearchProductDto>>
     {
         private readonly ISearchProductRepository _productRepository;
+        private readonly IMapper _mapper;
 
-        public SearchProductsQueryHandler(ISearchProductRepository productRepository)
+        public SearchProductsQueryHandler(ISearchProductRepository productRepository, IMapper mapper)
         {
             _productRepository = productRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<SearchProductDto>> Handle(SearchProductsQuery request, CancellationToken cancellationToken)
@@ -25,16 +27,7 @@ namespace Webshop.Search.Application.Features.SearchProduct.Queries.SearchProduc
                 request.MinPrice,
                 request.MaxPrice);
 
-            return products.Select(product => new SearchProductDto
-            {
-                Id = product.Id,
-                Name = product.Name,
-                Description = product.Description,
-                SKU = product.SKU,
-                Price = product.Price,
-                Currency = product.Currency
-
-            });
+            return _mapper.Map<IEnumerable<SearchProductDto>>(products);
         }
     }
 }

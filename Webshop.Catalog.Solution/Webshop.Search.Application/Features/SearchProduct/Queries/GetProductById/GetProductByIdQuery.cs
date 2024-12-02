@@ -12,6 +12,8 @@ namespace Webshop.Search.Application.Features.SearchProduct.Queries.GetProductBy
     {
         public int Id { get; set; }
 
+        public GetProductByIdQuery() { }
+
         public GetProductByIdQuery(int id)
         {
             Id = id;
