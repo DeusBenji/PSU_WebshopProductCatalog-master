@@ -2,7 +2,7 @@
 
 services:
   reviewservice1:
-    image: brhv/webshopreviewservice:latest
+    image: benj3249/webshopreviewservice:latest
     container_name: lb_reviewservice_1
     ports:
       - "9090:8080"
@@ -13,7 +13,7 @@ services:
       - micronetwork 
     
   reviewservice2:
-    image: brhv/webshopreviewservice:latest
+    image: benj3249/webshopreviewservice:latest
     container_name: lb_reviewservice_2
     ports:
       - "9091:8080"
