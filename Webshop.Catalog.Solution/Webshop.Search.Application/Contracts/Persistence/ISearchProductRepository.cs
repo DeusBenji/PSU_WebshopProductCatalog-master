@@ -17,19 +17,19 @@ namespace Webshop.Search.Application.Contracts.Persistence
         /// <param name="minPrice">Minimumspris (valgfrit).</param>
         /// <param name="maxPrice">Maksimumspris (valgfrit).</param>
         /// <returns>Liste over matchende produkter.</returns>
-        Task<IEnumerable<Product>> SearchProductsAsync(string query, int? categoryId, decimal? minPrice, decimal? maxPrice);
+        Task<IEnumerable<SearchProduct>> SearchProductsAsync(string query, int? categoryId, decimal? minPrice, decimal? maxPrice);
 
         /// <summary>
         /// Henter et produkt baseret på dets ID.
         /// </summary>
         /// <param name="productId">Produktets ID.</param>
         /// <returns>Produktobjektet.</returns>
-        Task<Product> GetProductByIdAsync(int productId);
+        Task<SearchProduct> GetProductByIdAsync(int productId);
 
         /// <summary>
         /// Henter alle produkter.
         /// </summary>
         /// <returns>Liste over alle produkter.</returns>
-        Task<IEnumerable<Product>> GetAllProductsAsync();
+        Task<IEnumerable<SearchProduct>> GetAllProductsAsync();
     }
 }

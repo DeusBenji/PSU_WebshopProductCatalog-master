@@ -17,23 +17,18 @@ namespace Webshop.Search.Application.Features.SearchCategory.Queries.GetAllCateg
     public class GetAllCategoriesQueryHandler : IRequestHandler<GetAllCategoriesQuery, IEnumerable<SearchCategoryDto>>
     {
         private readonly ISearchCategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
 
-        public GetAllCategoriesQueryHandler(ISearchCategoryRepository categoryRepository)
+        public GetAllCategoriesQueryHandler(ISearchCategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<SearchCategoryDto>> Handle(GetAllCategoriesQuery request, CancellationToken cancellationToken)
         {
             var categories = await _categoryRepository.GetAllCategoriesAsync();
-
-            return categories.Select(category => new SearchCategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name,
-                Description = category.Description,
-                ParentId = category.ParentId
-            });
+            return _mapper.Map<IEnumerable<SearchCategoryDto>>(categories);
         }
     }
 }

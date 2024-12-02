@@ -6,7 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Webshop.Search.Application.Contracts.Persistence;
 using Webshop.Search.Application.Features.SearchCategory.Dtos;
-using Webshop.Search.Application.Features.SearchCategory.Queries;
+using Webshop.Search.Application.Features.SearchCategory.Queries.GetAllCategories;
+using AutoMapper;
 
 namespace Webshop.Search.Application.Test.SearchTest
 {
@@ -17,23 +18,44 @@ namespace Webshop.Search.Application.Test.SearchTest
         {
             // Arrange
             var mockCategoryRepository = new Mock<ISearchCategoryRepository>();
-            mockCategoryRepository.Setup(repo => repo.GetAllCategoriesAsync())
-                .ReturnsAsync(new List<Domain.AggregateRoots.Category>
+            var mockMapper = new Mock<IMapper>();
+
+            // Simuler mockdata for kategorier
+            var categories = new List<Domain.AggregateRoots.SearchCategory>
+            {
+                new Domain.AggregateRoots.SearchCategory("Category 1", null) // Brug konstruktøren
                 {
-            new Domain.AggregateRoots.Category("Category 1"), // Brug konstruktøren
-            new Domain.AggregateRoots.Category("Category 2")  // Brug konstruktøren
+                    Description = "Description 1"
+                },
+                new Domain.AggregateRoots.SearchCategory("Category 2", null) // Brug konstruktøren
+                {
+                    Description = "Description 2"
+                }
+            };
+
+            // Mock repository-metode
+            mockCategoryRepository.Setup(repo => repo.GetAllCategoriesAsync()).ReturnsAsync(categories);
+
+            // Mock mapperen
+            mockMapper.Setup(m => m.Map<IEnumerable<SearchCategoryDto>>(categories)).Returns(
+                new List<SearchCategoryDto>
+                {
+                    new SearchCategoryDto { Id = 1, Name = "Category 1", Description = "Description 1", ParentId = null },
+                    new SearchCategoryDto { Id = 2, Name = "Category 2", Description = "Description 2", ParentId = null }
                 });
 
-            var handler = new GetAllCategoriesQueryHandler(mockCategoryRepository.Object);
+            // Opret handler med mock-objekter
+            var handler = new GetAllCategoriesQueryHandler(mockCategoryRepository.Object, mockMapper.Object);
             var query = new GetAllCategoriesQuery();
 
             // Act
             var result = await handler.Handle(query, CancellationToken.None);
 
             // Assert
-            Assert.NotNull(result);
-            Assert.Equal(2, result.Count());
-            Assert.Contains(result, c => c.Name == "Category 1");
+            Assert.NotNull(result); // Sikrer, at resultatet ikke er null
+            Assert.Equal(2, result.Count()); // Sikrer, at der er to kategorier
+            Assert.Contains(result, c => c.Name == "Category 1" && c.Description == "Description 1");
+            Assert.Contains(result, c => c.Name == "Category 2" && c.Description == "Description 2");
         }
     }
 }

@@ -5,13 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
     <PackageReference Include="Dapper" Version="2.1.35" />
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Webshop.Domain\Webshop.Domain.csproj" />
+    <ProjectReference Include="..\Webshop.Catalog.Application\Webshop.Catalog.Application.csproj" />
+    <ProjectReference Include="..\Webshop.Data.Persistence\Webshop.Data.Persistence.csproj" />
   </ItemGroup>
 
 </Project>

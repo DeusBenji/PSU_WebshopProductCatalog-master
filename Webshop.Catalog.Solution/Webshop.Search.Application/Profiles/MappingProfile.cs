@@ -13,10 +13,10 @@ namespace Webshop.Search.Application.Profiles
         public MappingProfile()
         {
             // Mapping for kategorier
-            CreateMap<Category, SearchCategoryDto>().ReverseMap();
+            CreateMap<SearchCategory, SearchCategoryDto>().ReverseMap();
 
             // Mapping for produkter
-            CreateMap<Product, SearchProductDto>().ReverseMap();
+            CreateMap<SearchProduct, SearchProductDto>().ReverseMap();
         }
     }
 }

@@ -8,14 +8,18 @@ using System.Threading.Tasks;
 using Webshop.Application.Contracts;
 using Webshop.Catalog.Application.Features.Product.Dtos;
 using Webshop.Catalog.Application.Features.Product.Queries.GetProducts;
-using Webshop.Category.Application.Features.Category.Commands.CreateCategory;
-using Webshop.Category.Application.Features.Category.Commands.DeleteCategory;
-using Webshop.Category.Application.Features.Category.Commands.UpdateCategory;
-using Webshop.Category.Application.Features.Category.Dtos;
-using Webshop.Category.Application.Features.Category.Queries.GetCategories;
-using Webshop.Category.Application.Features.Category.Queries.GetCategory;
-using Webshop.Category.Application.Features.Category.Queries.GetChildCategories;
-using Webshop.Category.Application.Features.Category.Requests;
+using Webshop.Catalog.Application.Features.Category.Dtos;
+using Webshop.Catalog.Application.Features.Category.Queries.GetCategories;
+using Webshop.Catalog.Application.Features.Category.Queries.GetCategory;
+using Webshop.Catalog.Application.Features.Category.Queries.GetChildCategories;
+using Webshop.Catalog.Application.Features.Category.Queries.GetCategory;
+using Webshop.Catalog.Application.Features.Category.Requests;
+using Webshop.Catalog.Application.Features.Category.Commands.CreateCategory;
+using Webshop.Catalog.Application.Features.Category.Commands.DeleteCategory;
+using Webshop.Catalog.Application.Features.Category.Commands.UpdateCategory;
+
+
+
 using Webshop.Domain.Common;
 
 namespace Webshop.Catalog.Api.Controllers
@@ -35,7 +39,7 @@ namespace Webshop.Catalog.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryRequest request)
+        public async Task<IActionResult> CreateCategory([FromBody]CreateCategoryRequest request)
         {
             //check incoming request
             CreateCategoryRequest.Validator validator = new CreateCategoryRequest.Validator();
@@ -55,14 +59,14 @@ namespace Webshop.Catalog.Api.Controllers
             }
             else
             {
-                logger.LogError(string.Join(",", result.Errors.Select(x => x.ErrorMessage)));
+                this.logger.LogError(string.Join(",", result.Errors.Select(x => x.ErrorMessage)));
                 return Error(result.Errors);
-            }
+            }            
         }
 
         [HttpPut]
         [Route("{id}")]
-        public async Task<IActionResult> UpdateCategory([FromBody] UpdateCategoryRequest request, int id)
+        public async Task<IActionResult> UpdateCategory([FromBody]UpdateCategoryRequest request, int id)
         {
             //check incoming request
             UpdateCategoryRequest.Validator validator = new UpdateCategoryRequest.Validator();
@@ -75,7 +79,7 @@ namespace Webshop.Catalog.Api.Controllers
             }
             else
             {
-                logger.LogError(string.Join(",", result.Errors.Select(x => x.ErrorMessage)));
+                this.logger.LogError(string.Join(",", result.Errors.Select(x => x.ErrorMessage)));
                 return Error(result.Errors);
             }
         }
@@ -93,14 +97,14 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> GetRootCategories(bool includeChildren)
         {
             GetCategoriesQuery query = new GetCategoriesQuery(includeChildren);
-            var result = await dispatcher.Dispatch(query);
+            var result = await this.dispatcher.Dispatch(query);
             if (result.Success)
             {
                 return FromResult<List<CategoryDto>>(result);
             }
             else
             {
-                logger.LogError(string.Join(",", result.Error.Message));
+                this.logger.LogError(string.Join(",", result.Error.Message));
                 return Error(result.Error);
             }
         }
@@ -110,14 +114,14 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> GetCategory(int id)
         {
             GetCategoryQuery query = new GetCategoryQuery(id);
-            var result = await dispatcher.Dispatch(query);
+            var result = await this.dispatcher.Dispatch(query);
             if (result.Success)
             {
                 return FromResult<CategoryDto>(result);
             }
             else
             {
-                logger.LogError(string.Join(",", result.Error.Message));
+                this.logger.LogError(string.Join(",", result.Error.Message));
                 return Error(result.Error);
             }
         }
@@ -127,14 +131,14 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> GetChildCategories(int id)
         {
             GetChildCategoriesQuery query = new GetChildCategoriesQuery(id);
-            var result = await dispatcher.Dispatch(query);
+            var result = await this.dispatcher.Dispatch(query);
             if (result.Success)
             {
                 return FromResult<IEnumerable<CategoryDto>>(result);
             }
             else
             {
-                logger.LogError(string.Join(",", result.Error.Message));
+                this.logger.LogError(string.Join(",", result.Error.Message));
                 return Error(result.Error);
             }
         }
@@ -144,7 +148,7 @@ namespace Webshop.Catalog.Api.Controllers
         public async Task<IActionResult> GetCategoryProducts(int id)
         {
             GetProductsQuery getProductsQuery = new GetProductsQuery(id);
-            var queryResult = await dispatcher.Dispatch(getProductsQuery);
+            var queryResult = await this.dispatcher.Dispatch(getProductsQuery);
             return FromResult<IEnumerable<ProductDto>>(queryResult);
         }
     }

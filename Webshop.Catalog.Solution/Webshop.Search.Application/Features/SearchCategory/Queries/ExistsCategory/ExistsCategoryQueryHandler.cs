@@ -11,18 +11,18 @@ using Webshop.Search.Application.Contracts.Persistence;
 
 namespace Webshop.Search.Application.Features.SearchCategory.Queries.ExistsCategory
 {
-    public class ExistsCategoryQueryHandler : IRequestHandler<ExistsCategoryQuery, bool>
+    public class ExistsCategoryQueryHandler : IRequestHandler<ExistsSearchCategoryQuery, bool>
     {
-        private readonly ISearchCategoryRepository _categoryRepository;
+        private readonly ISearchCategoryRepository _searchCategoryRepository;
 
         public ExistsCategoryQueryHandler(ISearchCategoryRepository categoryRepository)
         {
-            _categoryRepository = categoryRepository;
+            _searchCategoryRepository = categoryRepository;
         }
 
-        public async Task<bool> Handle(ExistsCategoryQuery request, CancellationToken cancellationToken)
+        public async Task<bool> Handle(ExistsSearchCategoryQuery request, CancellationToken cancellationToken)
         {
-            return await _categoryRepository.ExistsCategoryAsync(request.ParentId);
+            return await _searchCategoryRepository.ExistsCategoryAsync(request.ParentId);
         }
     }
 }

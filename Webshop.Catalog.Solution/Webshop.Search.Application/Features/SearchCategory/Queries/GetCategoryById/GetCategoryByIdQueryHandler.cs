@@ -17,10 +17,12 @@ namespace Webshop.Search.Application.Features.SearchCategory.Queries.GetCategory
     public class GetCategoryByIdQueryHandler : IRequestHandler<GetCategoryByIdQuery, SearchCategoryDto>
     {
         private readonly ISearchCategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
 
-        public GetCategoryByIdQueryHandler(ISearchCategoryRepository categoryRepository)
+        public GetCategoryByIdQueryHandler(ISearchCategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
 
         public async Task<SearchCategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
@@ -28,16 +30,10 @@ namespace Webshop.Search.Application.Features.SearchCategory.Queries.GetCategory
             var category = await _categoryRepository.GetCategoryByIdAsync(request.Id);
             if (category == null)
             {
-                return null; // Handle not found, or throw an exception if necessary
+                return null; // Alternativt: kast en exception afhængigt af kravene
             }
 
-            return new SearchCategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name,
-                Description = category.Description,
-                ParentId = category.ParentId
-            };
+            return _mapper.Map<SearchCategoryDto>(category);
         }
     }
 }

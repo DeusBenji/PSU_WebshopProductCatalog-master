@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Linq;
-using Webshop.Customer.Api.Utilities;
+using Webshop.Catalog.Api.Utilities;
 using Webshop.Domain.Common;
 using Webshop.Domain.ValueObjects;
 
@@ -36,7 +36,7 @@ namespace Webshop.Catalog.Api.Controllers
 
         protected ActionResult Error(List<ValidationFailure> validationErrors)
         {
-            List<string> errors = validationErrors.Select(x => x.ErrorMessage + "(" + x.PropertyName + ")").ToList();
+            List<string> errors = validationErrors.Select(x => x.ErrorMessage + "("+x.PropertyName+")").ToList();
             return Error(errors);
         }
 

@@ -1,5 +1,7 @@
-﻿using MediatR;
+﻿
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+
 using System.Reflection;
 using Webshop.Application.Contracts;
 using Webshop.Application;

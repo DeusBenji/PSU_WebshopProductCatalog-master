@@ -14,23 +14,18 @@ namespace Webshop.Search.Application.Features.SearchCategory.Queries.GetChildCat
     public class GetChildCategoriesQueryHandler : IRequestHandler<GetChildCategoriesQuery, IEnumerable<SearchCategoryDto>>
     {
         private readonly ISearchCategoryRepository _categoryRepository;
+        private readonly IMapper _mapper;
 
-        public GetChildCategoriesQueryHandler(ISearchCategoryRepository categoryRepository)
+        public GetChildCategoriesQueryHandler(ISearchCategoryRepository categoryRepository, IMapper mapper)
         {
             _categoryRepository = categoryRepository;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<SearchCategoryDto>> Handle(GetChildCategoriesQuery request, CancellationToken cancellationToken)
         {
             var childCategories = await _categoryRepository.GetChildCategoriesAsync(request.ParentId);
-
-            return childCategories.Select(category => new SearchCategoryDto
-            {
-                Id = category.Id,
-                Name = category.Name,
-                Description = category.Description,
-                ParentId = category.ParentId
-            });
+            return _mapper.Map<IEnumerable<SearchCategoryDto>>(childCategories);
         }
     }
 }

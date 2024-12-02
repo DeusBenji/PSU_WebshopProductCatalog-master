@@ -1,4 +1,4 @@
-﻿using PSU_PaymentGateway.Repository;
+﻿
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -18,7 +18,7 @@ namespace Webshop.Payment.Test.Repository
         public void AddSingleTransactionExpectTrue()
         {
             //Arrange
-            Result<Payment> paymentResult = Payment.Create("1234", "11/12", 123);
+            Result<Webshop.Payment.Api.Models.Payment> paymentResult = Webshop.Payment.Api.Models.Payment.Create("1234", "11/12", 123);
             Transaction transaction = Transaction.Create(1, paymentResult.Value).Value;
             IMemoryRepository memoryRepository = new MemoryRepository();
             //Act
@@ -31,7 +31,7 @@ namespace Webshop.Payment.Test.Repository
         public void AddMultipleTransactionExpectFalse()
         {
             //Arrange
-            Result<Payment> paymentResult = Payment.Create("1234", "11/12", 123);
+            Result<Webshop.Payment.Api.Models.Payment> paymentResult = Webshop.Payment.Api.Models.Payment.Create("1234", "11/12", 123);
             Transaction transaction = Transaction.Create(1, paymentResult.Value).Value;
             IMemoryRepository memoryRepository = new MemoryRepository();
             //Act

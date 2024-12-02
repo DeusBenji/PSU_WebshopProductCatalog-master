@@ -19,32 +19,44 @@ namespace Webshop.Search.Persistence
             _dbConnection = dbConnection;
         }
 
-        public async Task<Category> GetCategoryByIdAsync(int id)
+        /// <summary>
+        /// Henter en kategori baseret på dens ID.
+        /// </summary>
+        public async Task<SearchCategory> GetCategoryByIdAsync(int id)
         {
             var query = @"SELECT Id, Name, Description, ParentId 
                           FROM Categories 
                           WHERE Id = @Id";
 
-            return await _dbConnection.QuerySingleOrDefaultAsync<Category>(query, new { Id = id });
+            return await _dbConnection.QuerySingleOrDefaultAsync<SearchCategory>(query, new { Id = id });
         }
 
-        public async Task<IEnumerable<Category>> GetAllCategoriesAsync()
+        /// <summary>
+        /// Henter alle kategorier.
+        /// </summary>
+        public async Task<IEnumerable<SearchCategory>> GetAllCategoriesAsync()
         {
             var query = @"SELECT Id, Name, Description, ParentId 
                           FROM Categories";
 
-            return await _dbConnection.QueryAsync<Category>(query);
+            return await _dbConnection.QueryAsync<SearchCategory>(query);
         }
 
-        public async Task<IEnumerable<Category>> GetChildCategoriesAsync(int parentId)
+        /// <summary>
+        /// Henter alle underkategorier for en given kategori.
+        /// </summary>
+        public async Task<IEnumerable<SearchCategory>> GetChildCategoriesAsync(int parentId)
         {
             var query = @"SELECT Id, Name, Description, ParentId 
                           FROM Categories 
                           WHERE ParentId = @ParentId";
 
-            return await _dbConnection.QueryAsync<Category>(query, new { ParentId = parentId });
+            return await _dbConnection.QueryAsync<SearchCategory>(query, new { ParentId = parentId });
         }
 
+        /// <summary>
+        /// Tjekker, om en kategori med det angivne parentId findes.
+        /// </summary>
         public async Task<bool> ExistsCategoryAsync(int parentId)
         {
             var query = @"SELECT COUNT(1) 

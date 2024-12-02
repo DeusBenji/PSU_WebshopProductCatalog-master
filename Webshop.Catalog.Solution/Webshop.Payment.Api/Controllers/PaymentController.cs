@@ -35,7 +35,8 @@ namespace Webshop.Payment.Api.Controllers
                 return Result.Fail<Transaction>("The Payment service is not ready");
             }
             //simulate process
-            Result<Payment> paymentResult = Payment.Create(request.CardNumber, request.ExpirationDate, request.CVC);
+            Result<Webshop.Payment.Api.Models.Payment> paymentResult = Webshop.Payment.Api.Models.Payment.Create(request.CardNumber, request.ExpirationDate, request.CVC);
+
             if (paymentResult.IsSuccess)
             {
                 Result<Transaction> transactionResult = Transaction.Create(request.Amount, paymentResult.Value);

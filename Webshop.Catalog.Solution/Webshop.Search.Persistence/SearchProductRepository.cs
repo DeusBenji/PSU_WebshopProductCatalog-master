@@ -19,16 +19,19 @@ namespace Webshop.Search.Persistence
             _dbConnection = dbConnection;
         }
 
-        public async Task<IEnumerable<Product>> SearchProductsAsync(string query, int? categoryId, decimal? minPrice, decimal? maxPrice)
+        /// <summary>
+        /// Søger efter produkter baseret på forskellige kriterier.
+        /// </summary>
+        public async Task<IEnumerable<SearchProduct>> SearchProductsAsync(string query, int? categoryId, decimal? minPrice, decimal? maxPrice)
         {
-            var sql = @"SELECT Id, Name, SKU, Price, Currency, Description, CategoryId 
+            var sql = @"SELECT Id, Name, Description, Price, Currency 
                         FROM Products
                         WHERE (@Query IS NULL OR Name LIKE @Query)
                           AND (@CategoryId IS NULL OR CategoryId = @CategoryId)
                           AND (@MinPrice IS NULL OR Price >= @MinPrice)
                           AND (@MaxPrice IS NULL OR Price <= @MaxPrice)";
 
-            return await _dbConnection.QueryAsync<Product>(sql, new
+            return await _dbConnection.QueryAsync<SearchProduct>(sql, new
             {
                 Query = query != null ? $"%{query}%" : null,
                 CategoryId = categoryId,
@@ -37,21 +40,27 @@ namespace Webshop.Search.Persistence
             });
         }
 
-        public async Task<Product> GetProductByIdAsync(int productId)
+        /// <summary>
+        /// Henter et produkt baseret på dets ID.
+        /// </summary>
+        public async Task<SearchProduct> GetProductByIdAsync(int productId)
         {
-            var sql = @"SELECT Id, Name, SKU, Price, Currency, Description, CategoryId 
+            var sql = @"SELECT Id, Name, Description, Price, Currency 
                         FROM Products
                         WHERE Id = @ProductId";
 
-            return await _dbConnection.QuerySingleOrDefaultAsync<Product>(sql, new { ProductId = productId });
+            return await _dbConnection.QuerySingleOrDefaultAsync<SearchProduct>(sql, new { ProductId = productId });
         }
 
-        public async Task<IEnumerable<Product>> GetAllProductsAsync()
+        /// <summary>
+        /// Henter alle produkter.
+        /// </summary>
+        public async Task<IEnumerable<SearchProduct>> GetAllProductsAsync()
         {
-            var sql = @"SELECT Id, Name, SKU, Price, Currency, Description, CategoryId 
+            var sql = @"SELECT Id, Name, Description, Price, Currency 
                         FROM Products";
 
-            return await _dbConnection.QueryAsync<Product>(sql);
+            return await _dbConnection.QueryAsync<SearchProduct>(sql);
         }
     }
 }
