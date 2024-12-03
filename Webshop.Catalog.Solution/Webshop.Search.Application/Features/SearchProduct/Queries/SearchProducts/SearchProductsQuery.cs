@@ -12,6 +12,8 @@ namespace Webshop.Search.Application.Features.SearchProduct.Queries.SearchProduc
         public decimal? MaxPrice { get; set; }
         public string SKU { get; set; }
 
+        public SearchProductsQuery() { }
+
         public SearchProductsQuery(string name, int? categoryId, decimal? minPrice, decimal? maxPrice, string sku)
         {
             Name = name;

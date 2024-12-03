@@ -8,6 +8,9 @@ namespace Webshop.Search.Application.Features.SearchProduct.Queries.GetProductsB
     {
         public int CategoryId { get; set; }
 
+
+        public GetProductsByCategoryQuery() { }
+
         public GetProductsByCategoryQuery(int categoryId)
         {
             CategoryId = categoryId;
