@@ -1,8 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,77 +8,97 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Prometheus;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Threading.Tasks;
 using Webshop.Application;
 using Webshop.Application.Contracts;
 using Webshop.Customer.Application;
 using Webshop.Customer.Application.Contracts.Persistence;
 using Webshop.Customer.Persistence;
 using Webshop.Data.Persistence;
+using Webshop.Messaging; // Namespace til RabbitMQ-produceren
 
 namespace Webshop.Customer.Api
 {
     public class Startup
     {
-        private bool useJsondatabase = false;
+        private readonly IConfiguration _configuration;
+
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
-            string sequrl = Configuration.GetValue<string>("Settings:SeqLogAddress");
+            _configuration = configuration;
+            string seqUrl = _configuration.GetValue<string>("Settings:SeqLogAddress");
+
+            // Konfigurer Serilog logger
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
-                .Enrich.WithProperty("Service", "Customer.API") //enrich with the tag "service" and the name of this service
-                .WriteTo.Seq(sequrl)
+                .Enrich.WithProperty("Service", "Customer.API")
+                .WriteTo.Seq(seqUrl)
                 .CreateLogger();
         }
 
-        public IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Add MVC
             services.AddControllers();
+
+            // Swagger setup
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "Webshop.Customer.Api", Version = "v1" });
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Webshop.Customer.Api",
+                    Version = "v1"
+                });
             });
-            //add own services
+
+            // RabbitMQ-producer setup
+            services.AddSingleton<RbqCustomerProducer>(sp =>
+                new RbqCustomerProducer("localhost", "CustomerExchange", "ReviewQueue"));
+
+            // Add own services
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<DataContext, DataContext>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
-
             services.AddScoped<IDispatcher>(sp => new Dispatcher(sp.GetService<IMediator>()));
+
             services.AddCustomerApplicationServices();
-            //add healthchecks
+
+            // Health checks
             services.AddHealthChecks();
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory)
         {
-            app.UseDeveloperExceptionPage();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            // Enable Swagger
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Webshop.Customer.Api v1"));
 
+            // HTTPS redirect
             app.UseHttpsRedirection();
 
+            // Routing setup
             app.UseRouting();
 
+            // Authorization setup
             app.UseAuthorization();
 
+            // Endpoints
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
             });
-            //add serilog
+
+            // Serilog logging
             loggerFactory.AddSerilog();
-            //enable prometheus metrics
+
+            // Prometheus metrics
             app.UseHttpMetrics();
             app.UseHealthChecks("/health");
             app.UseMetricServer();

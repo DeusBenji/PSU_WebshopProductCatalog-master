@@ -13,6 +13,7 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.15.1" />
     <PackageReference Include="prometheus-net.AspNetCore" Version="8.2.1" />
     <PackageReference Include="prometheus-net.AspNetCore.HealthChecks" Version="8.2.1" />
+    <PackageReference Include="RabbitMQ.Client" Version="7.0.0" />
     <PackageReference Include="Serilog" Version="2.11.0" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.1.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
@@ -25,6 +26,7 @@
     <ProjectReference Include="..\Webshop.Customer.Application\Webshop.Customer.Application.csproj" />
     <ProjectReference Include="..\Webshop.Customer.Persistence\Webshop.Customer.Persistence.csproj" />
     <ProjectReference Include="..\Webshop.Domain\Webshop.Domain.csproj" />
+    <ProjectReference Include="..\Webshop.Messaging\Webshop.Messaging.csproj" />
   </ItemGroup>
 
 </Project>
