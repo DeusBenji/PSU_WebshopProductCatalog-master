@@ -15,6 +15,7 @@ namespace Webshop.Messaging
         {
             _exchangeName = exchangeName;
             _queueName = queueName;
+
             _factory = new ConnectionFactory
             {
                 HostName = hostname
@@ -23,8 +24,8 @@ namespace Webshop.Messaging
 
         public async Task InitializeAsync()
         {
-            using var connection = await _factory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
+            await using var connection = await _factory.CreateConnectionAsync();
+            await using var channel = await connection.CreateChannelAsync();
 
             // Declare the exchange
             await channel.ExchangeDeclareAsync(
@@ -53,19 +54,26 @@ namespace Webshop.Messaging
 
         public async Task SendMessageAsync(string message)
         {
-            using var connection = await _factory.CreateConnectionAsync();
-            using var channel = await connection.CreateChannelAsync();
+            try
+            {
+                await using var connection = await _factory.CreateConnectionAsync();
+                await using var channel = await connection.CreateChannelAsync();
 
-            var body = Encoding.UTF8.GetBytes(message);
+                var body = Encoding.UTF8.GetBytes(message);
 
-            // Publish message
-            await channel.BasicPublishAsync(
-                exchange: _exchangeName,
-                routingKey: string.Empty,
-                body: body
-            );
+                // Publish message
+                await channel.BasicPublishAsync(
+                    exchange: _exchangeName,
+                    routingKey: string.Empty,
+                    body: body
+                );
 
-            Console.WriteLine($" [x] Sent: {message}");
+                Console.WriteLine($" [x] Sent: {message}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($" [!] Error sending message: {ex.Message}");
+            }
         }
     }
 }

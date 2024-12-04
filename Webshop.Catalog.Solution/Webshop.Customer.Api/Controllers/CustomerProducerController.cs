@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Threading.Tasks;
 using Webshop.Messaging;
 
@@ -23,13 +24,21 @@ namespace Webshop.Customer.Api.Controllers
         [HttpPost("send")]
         public async Task<IActionResult> SendMessage([FromBody] MessageDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Message))
+            try
             {
-                return BadRequest("Message cannot be empty.");
-            }
+                if (string.IsNullOrWhiteSpace(dto.Message))
+                {
+                    return BadRequest("Message cannot be empty.");
+                }
 
-            await _producer.SendMessageAsync(dto.Message);
-            return Ok($"Message '{dto.Message}' sent.");
+                await _producer.SendMessageAsync(dto.Message);
+                return Ok($"Message '{dto.Message}' sent.");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[API] Error: {ex.Message}");
+                return StatusCode(500, "An error occurred while sending the message.");
+            }
         }
     }
 }

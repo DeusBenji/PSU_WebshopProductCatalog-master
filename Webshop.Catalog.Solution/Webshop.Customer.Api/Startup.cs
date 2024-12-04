@@ -9,13 +9,14 @@ using Microsoft.OpenApi.Models;
 using Prometheus;
 using Serilog;
 using System.Reflection;
+using System.Threading.Tasks;
 using Webshop.Application;
 using Webshop.Application.Contracts;
 using Webshop.Customer.Application;
 using Webshop.Customer.Application.Contracts.Persistence;
 using Webshop.Customer.Persistence;
 using Webshop.Data.Persistence;
-using Webshop.Messaging; // Namespace til RabbitMQ-produceren
+using Webshop.Messaging;
 
 namespace Webshop.Customer.Api
 {
@@ -26,9 +27,9 @@ namespace Webshop.Customer.Api
         public Startup(IConfiguration configuration)
         {
             _configuration = configuration;
-            string seqUrl = _configuration.GetValue<string>("Settings:SeqLogAddress");
 
-            // Konfigurer Serilog logger
+            // Konfigurer Serilog
+            string seqUrl = _configuration.GetValue<string>("Settings:SeqLogAddress");
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Information()
                 .Enrich.FromLogContext()
@@ -54,9 +55,13 @@ namespace Webshop.Customer.Api
 
             // RabbitMQ-producer setup
             services.AddSingleton<RbqCustomerProducer>(sp =>
-                new RbqCustomerProducer("localhost", "CustomerExchange", "ReviewQueue"));
+            {
+                var producer = new RbqCustomerProducer("localhost", "CustomerExchange", "ReviewQueue");
+                Task.Run(() => producer.InitializeAsync()).Wait(); // Kald InitializeAsync ved opstart
+                return producer;
+            });
 
-            // Add own services
+            // Add egne services
             services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<DataContext, DataContext>();
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
