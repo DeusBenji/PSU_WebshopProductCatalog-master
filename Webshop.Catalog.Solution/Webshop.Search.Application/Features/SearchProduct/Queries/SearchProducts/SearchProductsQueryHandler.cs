@@ -19,6 +19,7 @@ namespace Webshop.Search.Application.Features.SearchProduct.Queries.SearchProduc
 
         public async Task<IEnumerable<SearchProductDto>> Handle(SearchProductsQuery request, CancellationToken cancellationToken)
         {
+            // Filtrér produkter baseret på de angivne parametre
             var products = await _productRepository.SearchProductsAsync(
                 request.Name,
                 request.CategoryId,
@@ -33,8 +34,8 @@ namespace Webshop.Search.Application.Features.SearchProduct.Queries.SearchProduc
                 SKU = product.SKU,
                 Price = product.Price,
                 Currency = product.Currency
-
             });
         }
     }
+
 }
