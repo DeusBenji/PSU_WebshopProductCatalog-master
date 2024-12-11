@@ -1,38 +1,71 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Webshop.Data.Persistence
 {
     public class DataContext
     {
         private readonly IConfiguration _configuration;
-        private readonly string _connectionString;
         private readonly ILogger<DataContext> _logger;
+        private readonly string _sqlConnectionString;
+        private readonly string _redisConnectionString;
+        private IConnectionMultiplexer _redisConnection;
+
         public DataContext(IConfiguration configuration, ILogger<DataContext> logger)
         {
             _configuration = configuration;
             _logger = logger;
-            //first check the environment variable: connectionstring
-            //prefer the environment variable over the appsettings.json
-            string envConnectionString = Environment.GetEnvironmentVariable("connectionstring");
-            if (!string.IsNullOrEmpty(envConnectionString))
-            {
-                _connectionString = envConnectionString;
-                this._logger.LogInformation($"Using connectionstring: \"{_connectionString}\" - from environment variable");
-            }
-            else
-            {
-                _connectionString = _configuration.GetConnectionString("DefaultConnection");
-                this._logger.LogWarning($"Using connectionstring: \"{_connectionString}\" - from settings file");
-            }            
+
+            // Hent SQL-forbindelsesstrengen
+            _sqlConnectionString = Environment.GetEnvironmentVariable("SQL_CONNECTIONSTRING")
+                                   ?? _configuration.GetConnectionString("DefaultConnection");
+            _logger.LogInformation($"Using SQL connection string: {_sqlConnectionString}");
+
+            // Hent Redis-forbindelsesstrengen
+            _redisConnectionString = Environment.GetEnvironmentVariable("REDIS_CONNECTIONSTRING")
+                                     ?? _configuration.GetConnectionString("RedisConnection");
+            _logger.LogInformation($"Using Redis connection string: {_redisConnectionString}");
+
+            InitializeRedis();
         }
+
+        /// <summary>
+        /// Opret en ny SQL-forbindelse (uændret for at undgå kodeændringer andre steder).
+        /// </summary>
         public IDbConnection CreateConnection()
-            => new System.Data.SqlClient.SqlConnection(_connectionString);
+        {
+            _logger.LogInformation("Creating SQL database connection.");
+            return new System.Data.SqlClient.SqlConnection(_sqlConnectionString);
+        }
+
+        /// <summary>
+        /// Hent Redis-databasen.
+        /// </summary>
+        public IDatabase GetRedisDatabase()
+        {
+            _logger.LogInformation("Retrieving Redis database instance.");
+            if (_redisConnection == null || !_redisConnection.IsConnected)
+            {
+                InitializeRedis();
+            }
+            return _redisConnection.GetDatabase();
+        }
+
+        private void InitializeRedis()
+        {
+            try
+            {
+                _redisConnection = ConnectionMultiplexer.Connect(_redisConnectionString);
+                _logger.LogInformation("Successfully connected to Redis.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Failed to connect to Redis: {ex.Message}");
+                throw;
+            }
+        }
     }
 }

@@ -1,7 +1,6 @@
 version: "3.9"
 services:
   help:
-    # SeQ is a framework for logging of exceptions etc
     container_name: webshophelp
     image: benj3249/webshophelp
     restart: unless-stopped
@@ -12,7 +11,6 @@ services:
     environment:
       - SERVER=webshopdatabase
   seq:
-    # SeQ is a framework for logging of exceptions etc
     container_name: SeQ
     image: datalust/seq:latest
     restart: unless-stopped
@@ -24,7 +22,6 @@ services:
     environment:
       - ACCEPT_EULA=Y
   smtp4dev:
-    # Development time email server and client, easy to test sending emails
     container_name: smtp4dev
     image: rnwood/smtp4dev:latest
     ports:
@@ -33,7 +30,6 @@ services:
     networks:
       - backtier
   paymentapi:
-    # The payment API
     container_name: webshop.payment
     image: benj3249/webshoppaymentapi
     restart: unless-stopped
@@ -42,7 +38,6 @@ services:
     networks:
       - backtier  
   catalogapi:
-    # The catalog API
     container_name: webshop.catalog
     image: benj3249/webshopcatalogapi
     restart: unless-stopped
@@ -51,7 +46,6 @@ services:
     networks:
       - backtier
   customerapi:
-    # The customer API
     container_name: webshop.customer
     image: benj3249/webshopcustomerapi
     restart: unless-stopped
@@ -60,7 +54,6 @@ services:
     networks:
       - backtier
   reviewapi:
-    # The review API
     container_name: webshop.review
     image: benj3249/webshopreviewservice
     restart: unless-stopped
@@ -71,7 +64,6 @@ services:
     environment:
       - connectionstring=Server=webshopdatabase;Database=PSUReviews;User Id=sa;Password=PSU@password
   sqlexpress:
-    # The SQL server
     container_name: webshopdatabase
     image: mcr.microsoft.com/mssql/server:latest
     restart: unless-stopped
@@ -86,7 +78,6 @@ services:
     networks:
       - backtier
   rabbitmq:
-    # RabbitMQ service with management plugin
     image: rabbitmq:3.10-management
     container_name: rabbitmq
     restart: always
@@ -109,5 +100,27 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
     networks:
       - backtier
+  redis:
+    image: redis:latest
+    container_name: webshop.redis
+    restart: unless-stopped
+    ports:
+      - 6379:6379
+    networks:
+      - backtier
+  searchapi:
+    container_name: webshop.search
+    build:
+      context: ./Webshop.Search.Api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - 8088:8080
+    networks:
+      - backtier
+    environment:
+      - Redis__ConnectionString=webshop.redis:6379
+      - RabbitMQ__Host=rabbitmq
+      - Database__ConnectionString=Server=webshopdatabase;Database=PSUSearch;User Id=sa;Password=PSU@password
 networks:
   backtier: {}

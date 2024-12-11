@@ -7,13 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="11.0.1" />
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="11.0.0" />
-    <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="StackExchange.Redis" Version="2.8.22" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Webshop.Core.Contracts\Webshop.Core.Contracts.csproj" />
+    <ProjectReference Include="..\Webshop.Data.Persistence\Webshop.Data.Persistence.csproj" />
     <ProjectReference Include="..\Webshop.Domain\Webshop.Domain.csproj" />
   </ItemGroup>
 
