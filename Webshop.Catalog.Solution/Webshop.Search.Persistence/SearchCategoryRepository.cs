@@ -1,70 +1,79 @@
-﻿using Dapper;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading.Tasks;
+using Dapper;
 using Webshop.Search.Application.Contracts.Persistence;
 using Webshop.Search.Domain.AggregateRoots;
+using Webshop.Data.Persistence;
 
 namespace Webshop.Search.Persistence
 {
-    /// <summary>
-    /// Implementering af repository for søgekategorier.
-    /// </summary>
-    public class SearchCategoryRepository : ISearchCategoryRepository
+    public class SearchCategoryRepository : BaseRepository, ISearchCategoryRepository
     {
-        private readonly IDbConnection _dbConnection;
+        public SearchCategoryRepository(DataContext context) : base(TableNames.Search.CATEGORYTABLE, context) { }
 
-        public SearchCategoryRepository(IDbConnection dbConnection)
-        {
-            _dbConnection = dbConnection;
-        }
-
-        /// <summary>
-        /// Henter en kategori baseret på dens ID.
-        /// </summary>
         public async Task<SearchCategory> GetCategoryByIdAsync(int id)
         {
-            var query = @"SELECT Id, Name, Description, ParentId 
-                          FROM Categories 
-                          WHERE Id = @Id";
-
-            return await _dbConnection.QuerySingleOrDefaultAsync<SearchCategory>(query, new { Id = id });
+            using (var connection = dataContext.CreateConnection())
+            {
+                string query = $"SELECT Id, Name, Description, ParentId FROM {TableName} WHERE Id = @id";
+                return await connection.QuerySingleOrDefaultAsync<SearchCategory>(query, new { id });
+            }
         }
 
-        /// <summary>
-        /// Henter alle kategorier.
-        /// </summary>
         public async Task<IEnumerable<SearchCategory>> GetAllCategoriesAsync()
         {
-            var query = @"SELECT Id, Name, Description, ParentId 
-                          FROM Categories";
-
-            return await _dbConnection.QueryAsync<SearchCategory>(query);
+            using (var connection = dataContext.CreateConnection())
+            {
+                string query = $"SELECT Id, Name, Description, ParentId FROM {TableName}";
+                return await connection.QueryAsync<SearchCategory>(query);
+            }
         }
 
-        /// <summary>
-        /// Henter alle underkategorier for en given kategori.
-        /// </summary>
         public async Task<IEnumerable<SearchCategory>> GetChildCategoriesAsync(int parentId)
         {
-            var query = @"SELECT Id, Name, Description, ParentId 
-                          FROM Categories 
-                          WHERE ParentId = @ParentId";
-
-            return await _dbConnection.QueryAsync<SearchCategory>(query, new { ParentId = parentId });
+            using (var connection = dataContext.CreateConnection())
+            {
+                string query = $"SELECT Id, Name, Description, ParentId FROM {TableName} WHERE ParentId = @parentId";
+                return await connection.QueryAsync<SearchCategory>(query, new { parentId });
+            }
         }
 
-        /// <summary>
-        /// Tjekker, om en kategori med det angivne parentId findes.
-        /// </summary>
         public async Task<bool> ExistsCategoryAsync(int parentId)
         {
-            var query = @"SELECT COUNT(1) 
-                          FROM Categories 
-                          WHERE ParentId = @ParentId";
+            using (var connection = dataContext.CreateConnection())
+            {
+                string query = $"SELECT COUNT(1) FROM {TableName} WHERE ParentId = @parentId";
+                var count = await connection.ExecuteScalarAsync<int>(query, new { parentId });
+                return count > 0;
+            }
+        }
 
-            var count = await _dbConnection.ExecuteScalarAsync<int>(query, new { ParentId = parentId });
-            return count > 0;
+        public async Task CreateAsync(SearchCategory category)
+        {
+            using (var connection = dataContext.CreateConnection())
+            {
+                string command = $"INSERT INTO {TableName} (Name, ParentId, Description) VALUES (@Name, @ParentId, @Description)";
+                await connection.ExecuteAsync(command, new { category.Name, category.ParentId, category.Description });
+            }
+        }
+
+        public async Task UpdateAsync(SearchCategory category)
+        {
+            using (var connection = dataContext.CreateConnection())
+            {
+                string command = $"UPDATE {TableName} SET Name = @Name, Description = @Description WHERE Id = @Id";
+                await connection.ExecuteAsync(command, new { category.Name, category.Description, category.Id });
+            }
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            using (var connection = dataContext.CreateConnection())
+            {
+                string command = $"DELETE FROM {TableName} WHERE Id = @id";
+                await connection.ExecuteAsync(command, new { id });
+            }
         }
     }
 }

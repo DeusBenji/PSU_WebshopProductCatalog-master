@@ -24,5 +24,12 @@ namespace Webshop.Data.Persistence
         {
             public static string REVIEWTABLE = "Reviews";
         }
+        public static class Search
+        {
+            public static string CATEGORYTABLE = "SearchCategory";
+            public static string PRODUCTTABLE = "SearchProduct";
+            public static string PRODUCTCATEGORYTABLE = "SearchProductCategory";
+        }
     }
+    
 }
