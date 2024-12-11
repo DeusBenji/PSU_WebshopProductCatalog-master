@@ -41,19 +41,39 @@ namespace Webshop.Search.Api.Tests.Polly
         {
             // Arrange
             var circuitBreakerPolicy = PollyPolicies.GetCircuitBreakerPolicy(30);
+            int failureThreshold = 2; // Threshold for circuit breaker
+            int executionCount = 0;
 
-            // Act & Assert
-            await Assert.ThrowsAsync<BrokenCircuitException>(async () =>
+            // Act: Trigger circuit breaker by causing the specified number of failures
+            for (int i = 0; i < failureThreshold; i++)
             {
-                for (int i = 0; i < 3; i++)
+                await Assert.ThrowsAsync<HttpRequestException>(async () =>
                 {
-                    await circuitBreakerPolicy.ExecuteAsync(() =>
+                    await circuitBreakerPolicy.ExecuteAsync(async () =>
                     {
-                        // Simuler en transient HTTP-fejl
+                        executionCount++;
                         throw new HttpRequestException("Transient error");
                     });
-                }
+                });
+            }
+
+            // Assert: Circuit breaker should now be open
+            var exception = await Assert.ThrowsAsync<BrokenCircuitException>(async () =>
+            {
+                await circuitBreakerPolicy.ExecuteAsync(async () =>
+                {
+                    executionCount++;
+                    return new HttpResponseMessage(HttpStatusCode.OK);
+                });
             });
+
+            Assert.Equal("The circuit is now open and is not allowing calls.", exception.Message);
+            Assert.Equal(failureThreshold, executionCount); // Ensure threshold matches execution count
         }
+
+
+
+
+
     }
 }

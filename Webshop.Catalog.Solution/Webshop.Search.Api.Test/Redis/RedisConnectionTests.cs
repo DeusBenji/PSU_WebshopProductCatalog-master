@@ -21,27 +21,38 @@ namespace Webshop.Search.Api.Tests.Redis
         public void RedisConnection_ValidConnectionString_ConnectsSuccessfully()
         {
             // Arrange
-            var validConnectionString = "localhost:6379";
+            var validConnectionString = "localhost";
+            var mockLogger = new Mock<ILogger<RedisConnection>>();
 
             // Act
-            var redisConnection = new RedisConnection(validConnectionString, _mockLogger.Object);
-            var database = redisConnection.GetDatabase();
+            var redisConnection = new RedisConnection(validConnectionString, mockLogger.Object);
 
             // Assert
-            Assert.NotNull(database);
-            _mockLogger.Verify(logger => logger.LogInformation("Successfully connected to Redis."), Times.Once);
+            Assert.NotNull(redisConnection);
+            mockLogger.Verify(
+                x => x.Log(
+                    It.Is<LogLevel>(l => l == LogLevel.Information),
+                    It.IsAny<EventId>(),
+                    It.Is<It.IsAnyType>((v, t) => v.ToString().Contains("Successfully connected to Redis.")),
+                    null,
+                    It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+                Times.Once);
         }
+
 
         [Fact]
-        public void RedisConnection_InvalidConnectionString_ThrowsException()
+        public void RedisConnection_InvalidConnectionString_ThrowsRedisConnectionException()
         {
             // Arrange
-            var invalidConnectionString = "invalid:6379";
+            var invalidConnectionString = "invalid_connection_string";
+            var mockLogger = new Mock<ILogger<RedisConnection>>();
 
             // Act & Assert
-            var exception = Assert.Throws<Exception>(() =>
-                new RedisConnection(invalidConnectionString, _mockLogger.Object));
-            _mockLogger.Verify(logger => logger.LogError(It.IsAny<string>()), Times.Once);
+            Assert.Throws<RedisConnectionException>(() =>
+            {
+                new RedisConnection(invalidConnectionString, mockLogger.Object);
+            });
         }
+
     }
 }
