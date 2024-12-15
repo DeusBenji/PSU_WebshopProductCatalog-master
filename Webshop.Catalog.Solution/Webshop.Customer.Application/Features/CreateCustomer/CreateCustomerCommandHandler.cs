@@ -8,18 +8,18 @@ using Webshop.Customer.Application.Contracts.Persistence;
 using Webshop.Customer.Application.Features.CreateCustomer;
 using Webshop.Customer.Application.Features.Dto;
 using Webshop.Domain.Common;
-using Webshop.Messaging;
+using Webshop.Messaging.Contracts;
 
 public class CreateCustomerCommandHandler : ICommandHandler<CreateCustomerCommand>
 {
     private readonly ILogger<CreateCustomerCommandHandler> _logger;
     private readonly ICustomerRepository _customerRepository;
-    private readonly RbqCustomerProducer _producer;
+    private readonly IRbqCustomerProducer _producer;
 
     public CreateCustomerCommandHandler(
         ILogger<CreateCustomerCommandHandler> logger,
         ICustomerRepository customerRepository,
-        RbqCustomerProducer producer)
+        IRbqCustomerProducer producer)
     {
         _customerRepository = customerRepository;
         _logger = logger;
@@ -30,10 +30,8 @@ public class CreateCustomerCommandHandler : ICommandHandler<CreateCustomerComman
     {
         try
         {
-            // 1. Opret kunde i din database
             await _customerRepository.CreateAsync(command.Customer);
 
-            // 2. Opret DTO og send besked til RabbitMQ
             var customerDto = new CustomerDto
             {
                 Id = command.Customer.Id,
@@ -47,8 +45,7 @@ public class CreateCustomerCommandHandler : ICommandHandler<CreateCustomerComman
                 Country = command.Customer.Country
             };
 
-            // 3. Send besked
-            await _producer.SendMessageAsync(customerDto);
+            await _producer.SendMessageAsync(JsonSerializer.Serialize(customerDto));
 
             return Result.Ok();
         }

@@ -90,14 +90,16 @@ namespace Webshop.Customer.Api.Controllers
                 return Error(createResult.Error);
             }
 
-            // Send RabbitMQ-besked
+            // Serialiser DTO til JSON
             var customerDto = this.mapper.Map<CustomerDto>(customer);
-            await _producer.SendMessageAsync(customerDto);  // RabbitMQ-besked
+            var jsonMessage = System.Text.Json.JsonSerializer.Serialize(customerDto);
+
+            // Send RabbitMQ-besked
+            await _producer.SendMessageAsync(jsonMessage); // Nu sender du en string
             this.logger.LogInformation($"Customer '{customer.Name}' created and message sent to RabbitMQ.");
 
             return Ok($"Customer '{customer.Name}' successfully created and message sent.");
         }
-
 
         [HttpDelete]
         [Route("{id}")]

@@ -1,11 +1,11 @@
 ﻿using RabbitMQ.Client;
 using System.Text;
-using System.Text.Json;
 using System.Threading.Tasks;
+using Webshop.Messaging.Contracts;
 
 namespace Webshop.Messaging
 {
-    public class RbqCustomerProducer
+    public class RbqCustomerProducer : IRbqCustomerProducer
     {
         private readonly string _exchangeName;
         private readonly string _queueName;
@@ -15,35 +15,46 @@ namespace Webshop.Messaging
         {
             _exchangeName = exchangeName;
             _queueName = queueName;
-            _factory = new ConnectionFactory
-            {
-                HostName = hostname,
-                UserName = "guest",
-                Password = "guest"
-            };
+            _factory = new ConnectionFactory { HostName = hostname };
         }
 
+        // Initialiser exchange og queue
         public async Task InitializeAsync()
         {
             using var connection = await _factory.CreateConnectionAsync();
             using var channel = await connection.CreateChannelAsync();
 
-            await channel.ExchangeDeclareAsync(exchange: _exchangeName, type: ExchangeType.Fanout);
-            await channel.QueueDeclareAsync(queue: _queueName, durable: true, exclusive: false, autoDelete: false, arguments: null);
-            await channel.QueueBindAsync(queue: _queueName, exchange: _exchangeName, routingKey: string.Empty);
-        }
+            await channel.ExchangeDeclareAsync(
+                exchange: _exchangeName,
+                type: ExchangeType.Fanout
+            );
 
-        public async Task SendMessageAsync<T>(T message)
+            await channel.QueueDeclareAsync(
+                queue: _queueName,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null
+            );
+
+            await channel.QueueBindAsync(
+                queue: _queueName,
+                exchange: _exchangeName,
+                routingKey: string.Empty
+            );
+        }
+        public async Task SendMessageAsync(string message)
         {
             using var connection = await _factory.CreateConnectionAsync();
             using var channel = await connection.CreateChannelAsync();
+            var body = Encoding.UTF8.GetBytes(message);
 
-            var jsonMessage = JsonSerializer.Serialize(message);
-            var body = Encoding.UTF8.GetBytes(jsonMessage);
-
-            await channel.BasicPublishAsync(exchange: _exchangeName, routingKey: string.Empty, body: body);
-
-            Console.WriteLine($"[x] Sent: {jsonMessage}");
+            await channel.BasicPublishAsync(
+                exchange: _exchangeName,
+                routingKey: string.Empty,
+                body: body
+            );
         }
+
     }
 }
