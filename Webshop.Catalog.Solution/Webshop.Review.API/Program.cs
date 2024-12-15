@@ -6,7 +6,6 @@ using System.Reflection;
 using Webshop.Application;
 using Webshop.Application.Contracts;
 using Webshop.Data.Persistence;
-using Webshop.Review.Api.Utilities;
 using Webshop.Review.API.Utilities;
 using Webshop.Review.Application;
 using Webshop.Review.Persistence;

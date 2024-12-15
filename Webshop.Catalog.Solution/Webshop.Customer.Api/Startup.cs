@@ -57,7 +57,7 @@ namespace Webshop.Customer.Api
             services.AddSingleton<RbqCustomerProducer>(sp =>
             {
                 var producer = new RbqCustomerProducer("localhost", "CustomerExchange", "ReviewQueue");
-                Task.Run(() => producer.InitializeAsync()).Wait(); // Kald InitializeAsync ved opstart
+                Task.Run(() => producer.InitializeAsync()).Wait(); 
                 return producer;
             });
 

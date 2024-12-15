@@ -21,6 +21,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Webshop.Customer.Application\Webshop.Customer.Application.csproj" />
     <ProjectReference Include="..\Webshop.Data.Persistence\Webshop.Data.Persistence.csproj" />
+    <ProjectReference Include="..\Webshop.Messaging\Webshop.Messaging.csproj" />
   </ItemGroup>
 
 </Project>

@@ -14,6 +14,7 @@ using Webshop.Customer.Application.Features.GetCustomers;
 using Webshop.Customer.Application.Features.Requests;
 using Webshop.Customer.Application.Features.UpdateCustomer;
 using Webshop.Domain.Common;
+using Webshop.Messaging;
 
 namespace Webshop.Customer.Api.Controllers
 {
@@ -24,11 +25,13 @@ namespace Webshop.Customer.Api.Controllers
         private IDispatcher dispatcher;
         private IMapper mapper;
         private ILogger<CustomersController> logger;
-        public CustomersController(IDispatcher dispatcher, IMapper mapper, ILogger<CustomersController> logger)
+        private readonly RbqCustomerProducer _producer;  // Tilføj RabbitMQ-producenten
+        public CustomersController(IDispatcher dispatcher, IMapper mapper, ILogger<CustomersController> logger, RbqCustomerProducer producer)
         {
             this.mapper = mapper;
             this.logger = logger;
             this.dispatcher = dispatcher;
+            _producer = producer;
         }
 
         [HttpGet]
@@ -65,23 +68,36 @@ namespace Webshop.Customer.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateCustomer([FromBody]CreateCustomerRequest request)
+        public async Task<IActionResult> CreateCustomer([FromBody] CreateCustomerRequest request)
         {
             CreateCustomerRequest.Validator validator = new CreateCustomerRequest.Validator();
-            var result = validator.Validate(request);
-            if (result.IsValid)
+            var validationResult = validator.Validate(request);
+
+            if (!validationResult.IsValid)
             {
-                Domain.AggregateRoots.Customer customer = this.mapper.Map<Domain.AggregateRoots.Customer>(request);
-                CreateCustomerCommand command = new CreateCustomerCommand(customer);
-                Result createResult = await this.dispatcher.Dispatch(command);
-                return Ok(createResult);
+                this.logger.LogError(string.Join(",", validationResult.Errors.Select(x => x.ErrorMessage)));
+                return Error(validationResult.Errors);
             }
-            else
+
+            // Opret kunden
+            var customer = this.mapper.Map<Domain.AggregateRoots.Customer>(request);
+            var createCommand = new CreateCustomerCommand(customer);
+            Result createResult = await this.dispatcher.Dispatch(createCommand);
+
+            if (!createResult.Success)
             {
-                this.logger.LogError(string.Join(",", result.Errors.Select(x => x.ErrorMessage)));
-                return Error(result.Errors);
-            }            
+                this.logger.LogError(createResult.Error.Message);
+                return Error(createResult.Error);
+            }
+
+            // Send RabbitMQ-besked
+            var customerDto = this.mapper.Map<CustomerDto>(customer);
+            await _producer.SendMessageAsync(customerDto);  // RabbitMQ-besked
+            this.logger.LogInformation($"Customer '{customer.Name}' created and message sent to RabbitMQ.");
+
+            return Ok($"Customer '{customer.Name}' successfully created and message sent.");
         }
+
 
         [HttpDelete]
         [Route("{id}")]

@@ -7,6 +7,7 @@ using Webshop.Customer.Application.Features.CreateCustomer;
 using Webshop.Customer.Application.Features.DeleteCustomer;
 using Webshop.Customer.Application.Features.UpdateCustomer;
 using Webshop.Domain.Common;
+using Webshop.Messaging;
 using Xunit;
 
 namespace Webshop.Customer.Application.Test
@@ -42,20 +43,31 @@ namespace Webshop.Customer.Application.Test
         }
 
         [Fact]
-        public async Task CreateCustomerCommandHandler_Invoke_repositorycreate_expect_success() 
+        public async Task CreateCustomerCommandHandler_Invoke_repositorycreate_expect_success()
         {
-            //arrange
-            var loggerMock = new Mock<Microsoft.Extensions.Logging.ILogger<CreateCustomerCommandHandler>>();            
-            var customerRepositoryMock = new Mock<ICustomerRepository>();            
-            Domain.AggregateRoots.Customer customer = new Domain.AggregateRoots.Customer("Centisoft");            
+            // Arrange
+            var loggerMock = new Mock<Microsoft.Extensions.Logging.ILogger<CreateCustomerCommandHandler>>();
+            var customerRepositoryMock = new Mock<ICustomerRepository>();
+            var producerMock = new Mock<RbqCustomerProducer>();
+
+            Domain.AggregateRoots.Customer customer = new Domain.AggregateRoots.Customer("Centisoft");
             CreateCustomerCommand command = new CreateCustomerCommand(customer);
-            CreateCustomerCommandHandler handler = new CreateCustomerCommandHandler(loggerMock.Object, customerRepositoryMock.Object);
-            //act
+
+            CreateCustomerCommandHandler handler = new CreateCustomerCommandHandler(
+                loggerMock.Object,
+                customerRepositoryMock.Object,
+                producerMock.Object
+            );
+
+            // Act
             Result result = await handler.Handle(command);
-            //assert
-            customerRepositoryMock.Verify((m => m.CreateAsync(customer)), Times.Once);            
+
+            // Assert
+            customerRepositoryMock.Verify(m => m.CreateAsync(customer), Times.Once);
+            producerMock.Verify(m => m.SendMessageAsync(It.IsAny<string>()), Times.Once); // Tjek at producenten blev kaldt
             Assert.True(result.Success);
         }
+
 
         [Fact]
         public async Task UpdateCustomerCommandHandler_Invoke_repositoryupdate_expect_success()
