@@ -17,6 +17,7 @@ using Webshop.Customer.Application.Contracts.Persistence;
 using Webshop.Customer.Persistence;
 using Webshop.Data.Persistence;
 using Webshop.Messaging;
+using Webshop.Messaging.Contracts;
 
 namespace Webshop.Customer.Api
 {
@@ -54,12 +55,13 @@ namespace Webshop.Customer.Api
             });
 
             // RabbitMQ-producer setup
-            services.AddSingleton<RbqCustomerProducer>(sp =>
+            services.AddSingleton<IRbqCustomerProducer>(sp =>
             {
                 var producer = new RbqCustomerProducer("localhost", "CustomerExchange", "ReviewQueue");
-                Task.Run(() => producer.InitializeAsync()).Wait(); // Kald InitializeAsync ved opstart
+                Task.Run(() => producer.InitializeAsync()).Wait();
                 return producer;
             });
+
 
             // Add egne services
             services.AddScoped<ICustomerRepository, CustomerRepository>();

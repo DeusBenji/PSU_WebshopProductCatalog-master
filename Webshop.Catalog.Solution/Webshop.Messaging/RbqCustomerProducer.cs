@@ -1,11 +1,11 @@
 ﻿using RabbitMQ.Client;
-using System;
 using System.Text;
 using System.Threading.Tasks;
+using Webshop.Messaging.Contracts;
 
 namespace Webshop.Messaging
 {
-    public class RbqCustomerProducer
+    public class RbqCustomerProducer : IRbqCustomerProducer
     {
         private readonly string _exchangeName;
         private readonly string _queueName;
@@ -15,25 +15,20 @@ namespace Webshop.Messaging
         {
             _exchangeName = exchangeName;
             _queueName = queueName;
-
-            _factory = new ConnectionFactory
-            {
-                HostName = hostname
-            };
+            _factory = new ConnectionFactory { HostName = hostname };
         }
 
+        // Initialiser exchange og queue
         public async Task InitializeAsync()
         {
-            await using var connection = await _factory.CreateConnectionAsync();
-            await using var channel = await connection.CreateChannelAsync();
+            using var connection = await _factory.CreateConnectionAsync();
+            using var channel = await connection.CreateChannelAsync();
 
-            // Declare the exchange
             await channel.ExchangeDeclareAsync(
                 exchange: _exchangeName,
                 type: ExchangeType.Fanout
             );
 
-            // Declare the queue
             await channel.QueueDeclareAsync(
                 queue: _queueName,
                 durable: true,
@@ -42,38 +37,24 @@ namespace Webshop.Messaging
                 arguments: null
             );
 
-            // Bind the queue to the exchange
             await channel.QueueBindAsync(
                 queue: _queueName,
                 exchange: _exchangeName,
                 routingKey: string.Empty
             );
-
-            Console.WriteLine($" [x] Exchange '{_exchangeName}' and Queue '{_queueName}' initialized.");
         }
-
         public async Task SendMessageAsync(string message)
         {
-            try
-            {
-                await using var connection = await _factory.CreateConnectionAsync();
-                await using var channel = await connection.CreateChannelAsync();
+            using var connection = await _factory.CreateConnectionAsync();
+            using var channel = await connection.CreateChannelAsync();
+            var body = Encoding.UTF8.GetBytes(message);
 
-                var body = Encoding.UTF8.GetBytes(message);
-
-                // Publish message
-                await channel.BasicPublishAsync(
-                    exchange: _exchangeName,
-                    routingKey: string.Empty,
-                    body: body
-                );
-
-                Console.WriteLine($" [x] Sent: {message}");
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($" [!] Error sending message: {ex.Message}");
-            }
+            await channel.BasicPublishAsync(
+                exchange: _exchangeName,
+                routingKey: string.Empty,
+                body: body
+            );
         }
+
     }
 }

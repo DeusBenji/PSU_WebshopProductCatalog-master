@@ -7,6 +7,8 @@ using Webshop.Customer.Application.Features.CreateCustomer;
 using Webshop.Customer.Application.Features.DeleteCustomer;
 using Webshop.Customer.Application.Features.UpdateCustomer;
 using Webshop.Domain.Common;
+using Webshop.Messaging;
+using Webshop.Messaging.Contracts;
 using Xunit;
 
 namespace Webshop.Customer.Application.Test
@@ -42,20 +44,30 @@ namespace Webshop.Customer.Application.Test
         }
 
         [Fact]
-        public async Task CreateCustomerCommandHandler_Invoke_repositorycreate_expect_success() 
+        public async Task CreateCustomerCommandHandler_Invoke_repositorycreate_expect_success()
         {
-            //arrange
-            var loggerMock = new Mock<Microsoft.Extensions.Logging.ILogger<CreateCustomerCommandHandler>>();            
-            var customerRepositoryMock = new Mock<ICustomerRepository>();            
-            Domain.AggregateRoots.Customer customer = new Domain.AggregateRoots.Customer("Centisoft");            
-            CreateCustomerCommand command = new CreateCustomerCommand(customer);
-            CreateCustomerCommandHandler handler = new CreateCustomerCommandHandler(loggerMock.Object, customerRepositoryMock.Object);
-            //act
-            Result result = await handler.Handle(command);
-            //assert
-            customerRepositoryMock.Verify((m => m.CreateAsync(customer)), Times.Once);            
+            var loggerMock = new Mock<ILogger<CreateCustomerCommandHandler>>();
+            var customerRepositoryMock = new Mock<ICustomerRepository>();
+            var producerMock = new Mock<IRbqCustomerProducer>();
+
+            producerMock.Setup(p => p.SendMessageAsync(It.IsAny<string>()))
+                        .Returns(Task.CompletedTask);
+
+            var handler = new CreateCustomerCommandHandler(loggerMock.Object,
+                                                           customerRepositoryMock.Object,
+                                                           producerMock.Object);
+
+            var customer = new Domain.AggregateRoots.Customer("Centisoft");
+            var command = new CreateCustomerCommand(customer);
+
+            var result = await handler.Handle(command);
+
+            customerRepositoryMock.Verify(repo => repo.CreateAsync(customer), Times.Once);
+            producerMock.Verify(p => p.SendMessageAsync(It.IsAny<string>()), Times.Once);
             Assert.True(result.Success);
+
         }
+
 
         [Fact]
         public async Task UpdateCustomerCommandHandler_Invoke_repositoryupdate_expect_success()
